@@ -2,14 +2,14 @@
   {
     "id": "scenario_01_happy_path",
     "name": "Kịch bản 1: Happy Path - Gia đình có bé nhỏ quét QR tại Cổng Khu Cổ Tích lúc 10:00 sáng",
-    "description": "Kiểm thử hành vi tối ưu thông thường khi mọi thứ hoạt động bình thường, gợi ý các trò chơi gia đình không mạo hiểm và có show diễn sắp bắt đầu.",
+    "description": "Kiểm thử hành vi tối ưu khi mọi thứ hoạt động bình thường, du khách có trẻ nhỏ (tuổi min=5, chiều cao min=105cm). AI lọc bỏ trò chơi mạo hiểm hoặc vi phạm giới hạn chiều cao, gợi ý các hoạt động phù hợp gia đình.",
     "input_context": {
       "qr_station_id": "qr_station_01",
       "scan_time": "10:00",
       "user_profile": {
-        "group_type": "family_with_kids",
-        "has_elderly": false,
-        "min_height_cm": 100
+        "min_age": 5,
+        "max_age": 35,
+        "min_height_cm": 105
       },
       "weather_override": {
         "condition": "sunny",
@@ -19,7 +19,7 @@
       "status_override": {}
     },
     "expected_behavior": {
-      "ai_decision": "Lọc bỏ các trò chơi mạo hiểm (Tàu lượn siêu tốc) hoặc không phù hợp với chiều cao bé (Đu quay dây văng cần min 120cm). Ưu tiên 'Show Rồng lửa' sắp diễn ra lúc 10:15 (cách 350m, đi bộ 5 phút) và trò 'Lâu đài huyền bí' (cách 50m, chờ 15 phút, trong nhà mát). Gợi ý ăn trưa nhẹ tại 'Nhà Hàng Lâu Đài Cổ Tích'.",
+      "ai_decision": "Lọc bỏ các trò chơi mạo hiểm (Tàu lượn siêu tốc cần min_age=12, min_height=140cm) hoặc không phù hợp với chiều cao bé (Đu quay dây văng cần min_height=120cm). Ưu tiên 'Show Rồng lửa' sắp diễn ra lúc 10:15 (cách 350m, đi bộ 5 phút) và trò 'Lâu đài huyền bí' (cách 50m, chờ 15 phút, trong nhà mát mẻ, phù hợp bé từ 90cm). Gợi ý ăn trưa nhẹ tại 'Nhà Hàng Lâu Đài Cổ Tích'.",
       "suggested_message": "Chào mừng gia đình bạn đến với Khu Cổ Tích! Thời tiết hiện tại nắng ấm (31°C) rất đẹp. WonderPath gợi ý lịch trình 1-2 tiếng tới cho gia đình mình như sau:\n1. Xem 'Show Rồng Lửa' bắt đầu lúc 10:15 ở Sân khấu trung tâm (cách 350m, đi bộ khoảng 5 phút).\n2. Chơi 'Lâu Đài Huyền Bí' (cách 50m, chờ xếp hàng 15 phút, trò chơi trong nhà mát mẻ phù hợp cho bé).\nBạn muốn làm gì tiếp theo?",
       "ui_buttons": [
         {
@@ -42,7 +42,7 @@
   {
     "id": "scenario_02_low_confidence",
     "name": "Kịch bản 2: Low-confidence Path - Quét QR nhưng thiếu thông tin loại nhóm (chưa chọn profile)",
-    "description": "Khi hệ thống chưa biết đối tượng du khách là ai (gia đình, cặp đôi hay nhóm bạn), AI cần đưa ra câu hỏi phân loại nhanh thông qua các nút bấm để định hình gợi ý tiếp theo.",
+    "description": "Khi hệ thống chưa biết đối tượng du khách là ai (user_profile: null), AI cần đưa ra câu hỏi phân loại nhanh thông qua các nút chọn nhanh tuổi và chiều cao tối thiểu để định hình gợi ý tiếp theo.",
     "input_context": {
       "qr_station_id": "qr_station_01",
       "scan_time": "14:00",
@@ -55,23 +55,35 @@
       "status_override": {}
     },
     "expected_behavior": {
-      "ai_decision": "Không thể đề xuất lịch trình chính xác do thiếu profile. Đưa ra câu chào thân thiện tại vị trí quét và đưa ra 3 nút bấm phân loại nhanh để cập nhật profile tạm thời của phiên.",
+      "ai_decision": "Không thể đề xuất lịch trình chính xác do thiếu profile. Đưa ra câu chào thân thiện tại vị trí quét và đưa ra 3 nút bấm chứa dữ liệu độ tuổi và chiều cao thấp nhất để cập nhật profile tạm thời của phiên.",
       "suggested_message": "Chào bạn! Bạn đang ở Cổng Khu Cổ Tích. Để WonderPath gợi ý lịch trình 1-2 tiếng tới phù hợp nhất cho bạn, vui lòng cho mình biết bạn đang đi cùng ai nhé?",
       "ui_buttons": [
         {
-          "label": "Gia đình có trẻ nhỏ 👨‍👩‍👧‍👦",
+          "label": "Nhóm có bé nhỏ (Dưới 1m) 👶",
           "action": "update_profile",
-          "data": { "group_type": "family_with_kids" }
+          "data": {
+            "min_age": 3,
+            "max_age": 38,
+            "min_height_cm": 95
+          }
         },
         {
           "label": "Nhóm bạn trẻ thích cảm giác mạnh 🎢",
           "action": "update_profile",
-          "data": { "group_type": "thrill_seekers" }
+          "data": {
+            "min_age": 18,
+            "max_age": 28,
+            "min_height_cm": 155
+          }
         },
         {
-          "label": "Đi thong thả nghỉ dưỡng 🍃",
+          "label": "Gia đình có người già & trẻ em 🍃",
           "action": "update_profile",
-          "data": { "group_type": "leisure" }
+          "data": {
+            "min_age": 6,
+            "max_age": 70,
+            "min_height_cm": 110
+          }
         }
       ]
     }
@@ -79,14 +91,14 @@
   {
     "id": "scenario_03_failure_maintenance",
     "name": "Kịch bản 3: Failure Path (Bảo trì/Quá tải) - Nhóm bạn trẻ quét QR tại Ngã Tư Phiêu Lưu muốn chơi Tàu lượn siêu tốc nhưng trò này đột ngột bảo trì",
-    "description": "Kiểm thử khả năng xử lý lỗi thời gian thực. Khi trò chơi yêu thích/gần nhất đang bảo trì hoặc hàng đợi quá dài (>60 phút), AI tự động phát hiện và chủ động gợi ý phương án thay thế phù hợp.",
+    "description": "Kiểm thử khả năng xử lý lỗi thời gian thực đối với nhóm bạn trẻ năng động (tuổi 18-25, chiều cao min=165cm). Khi trò chơi yêu thích/gần nhất đang bảo trì, AI tự động đề xuất phương án thay thế phù hợp.",
     "input_context": {
       "qr_station_id": "qr_station_02",
       "scan_time": "11:00",
       "user_profile": {
-        "group_type": "thrill_seekers",
-        "has_elderly": false,
-        "min_height_cm": 150
+        "min_age": 18,
+        "max_age": 25,
+        "min_height_cm": 165
       },
       "weather_override": {
         "condition": "sunny",
@@ -102,7 +114,7 @@
       }
     },
     "expected_behavior": {
-      "ai_decision": "Nhận biết trò chơi cảm giác mạnh chính 'Tàu lượn siêu tốc' (att_roller_coaster) đang bảo trì. Thay thế bằng gợi ý 'Đu quay dây văng' (att_swing_carousel - cách 600m, chờ 10 phút, cảm giác mạnh vừa) hoặc gợi ý ăn uống nạp năng lượng tại 'Khu ẩm thực nhanh Express' ngay bên cạnh.",
+      "ai_decision": "Nhận biết trò chơi cảm giác mạnh chính 'Tàu lượn siêu tốc' (att_roller_coaster) đang bảo trì. Thay thế bằng gợi ý 'Đu quay dây văng' (att_swing_carousel - cách 600m, chờ 10 phút, cảm giác mạnh vừa, yêu cầu chiều cao tối thiểu 120cm, tuổi tối thiểu 8) hoặc gợi ý ăn uống nạp năng lượng tại 'Khu ẩm thực nhanh Express' ngay bên cạnh.",
       "suggested_message": "Chào nhóm bạn trẻ năng động! Bạn đang ở Ngã Tư Phiêu Lưu. Tiếc quá, trò 'Tàu Lượn Siêu Tốc' ngay gần bạn đang tạm dừng bảo trì kỹ thuật định kỳ. \nĐừng lo, WonderPath gợi ý bạn thử sức với:\n1. 'Đu Quay Dây Văng' (cách 600m đi bộ, chờ xếp hàng chỉ 10 phút, cảm giác bay lượn cực thích).\n2. Ăn nhẹ nạp năng lượng tại 'Khu Ẩm Thực Nhanh Express' cách bạn 150m.\nBạn thấy sao?",
       "ui_buttons": [
         {
@@ -125,14 +137,14 @@
   {
     "id": "scenario_04_weather_emergency",
     "name": "Kịch bản 4: Correction/Emergency Path - Đang quét QR thì trời bất ngờ đổ dông bão (Stormy)",
-    "description": "Kiểm thử khả năng ứng biến khẩn cấp khi thời tiết chuyển xấu đột ngột. AI tự động lọc bỏ tất cả các trò chơi ngoài trời, hiển thị cảnh báo đỏ và chỉ dẫn nhanh tới nơi trú mưa an toàn gần nhất.",
+    "description": "Kiểm thử khả năng ứng biến khẩn cấp khi thời tiết chuyển xấu đột ngột đối với nhóm có cả người già và trẻ em (tuổi min=4, max=68, chiều cao min=95cm). AI tự động lọc bỏ tất cả các trò chơi ngoài trời, hiển thị cảnh báo đỏ và chỉ dẫn nhanh tới nơi trú mưa an toàn gần nhất.",
     "input_context": {
       "qr_station_id": "qr_station_03",
       "scan_time": "15:00",
       "user_profile": {
-        "group_type": "family_with_kids",
-        "has_elderly": true,
-        "min_height_cm": 90
+        "min_age": 4,
+        "max_age": 68,
+        "min_height_cm": 95
       },
       "weather_override": {
         "condition": "stormy",
@@ -154,6 +166,78 @@
           "label": "Chỉ đường tới Chòi Nghỉ Ven Hồ",
           "action": "navigate",
           "target_id": "att_lakeside_gazebo"
+        }
+      ]
+    }
+  },
+  {
+    "id": "scenario_05_queue_overload",
+    "name": "Kịch bản 5: Queue Overload Path - Nhóm bạn trẻ quét QR tại Công Viên Nước nhưng Đường Trượt Nước quá tải (>45 phút)",
+    "description": "Kiểm thử hành vi khi một địa điểm quá tải (wait_time_mins > 45). AI tự động lọc bỏ trò chơi quá tải, đề xuất ăn uống/nghỉ ngơi tại khu ẩm thực gần đó để giãn đám đông, và cung cấp nút đổi phương án.",
+    "input_context": {
+      "qr_station_id": "qr_station_04",
+      "scan_time": "14:30",
+      "user_profile": {
+        "min_age": 16,
+        "max_age": 28,
+        "min_height_cm": 155
+      },
+      "weather_override": {
+        "condition": "sunny",
+        "temperature_c": 35,
+        "warning_level": "none"
+      },
+      "status_override": {
+        "att_water_slide": {
+          "status": "active",
+          "wait_time_mins": 50,
+          "crowd_level": "high"
+        }
+      }
+    },
+    "expected_behavior": {
+      "ai_decision": "Phát hiện trò chơi chính 'Đường Trượt Nước Lốc Xoáy' (att_water_slide) đang bị quá tải (chờ 50 phút > 45 phút). AI loại bỏ trò này khỏi gợi ý, đề xuất chuyển sang ăn uống giải nhiệt tại 'Khu Ẩm Thực Nhanh Express' (att_food_court_fast - cách 220m) và thêm nút 'Đổi phương án khác'.",
+      "suggested_message": "Chào các bạn! Hiện tại Đường Trượt Nước Lốc Xoáy đang rất đông khách với thời gian chờ lên tới 50 phút. WonderPath gợi ý bạn ghé Khu Ẩm Thực Nhanh Express cách 220m để thưởng thức đồ uống mát lạnh và nghỉ ngơi chờ đám đông hạ nhiệt nhé.",
+      "ui_buttons": [
+        {
+          "label": "Ghé Khu Ẩm Thực Express",
+          "action": "navigate",
+          "target_id": "att_food_court_fast"
+        },
+        {
+          "label": "Đổi phương án khác",
+          "action": "request_alternative"
+        }
+      ]
+    }
+  },
+  {
+    "id": "scenario_06_realtime_weather",
+    "name": "Kịch bản 6: Real-time Weather Integration - Đọc thời tiết thực tế từ API Open-Meteo",
+    "description": "Kiểm thử khả năng hệ thống tự động kết nối API Open-Meteo để lấy thời tiết thực tế khi trường weather_override không được cung cấp.",
+    "input_context": {
+      "qr_station_id": "qr_station_01",
+      "scan_time": "10:00",
+      "user_profile": {
+        "min_age": 5,
+        "max_age": 35,
+        "min_height_cm": 105
+      },
+      "status_override": {}
+    },
+    "expected_behavior": {
+      "ai_decision": "Lấy thời tiết thực tế từ Open-Meteo API. Trong điều kiện thời tiết thực tế (nắng nóng hoặc bình thường), AI đề xuất 'Show Rồng lửa' sắp diễn ra lúc 10:15 và trò 'Lâu đài huyền bí' lân cận.",
+      "suggested_message": "Chào mừng gia đình bạn đến với Khu Cổ Tích! Thời tiết hiện tại nắng ấm rất đẹp. WonderPath gợi ý lịch trình...",
+      "ui_buttons": [
+        {
+          "label": "Xem Show Rồng Lửa (10:15)",
+          "action": "navigate",
+          "target_id": "att_show_fire_dragon"
+        },
+        {
+          "label": "Chơi Lâu Đài Huyền Bí",
+          "action": "navigate",
+          "target_id": "att_magic_castle"
         }
       ]
     }

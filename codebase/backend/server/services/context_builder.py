@@ -9,11 +9,21 @@ from server.services.mock_data_service import (
     get_station_by_id,
     load_mock_data,
 )
+from server.services.weather_service import fetch_real_weather
 from server.utils.safety_rules import build_safety_summary, get_safety_flags
 
 
 def get_current_time() -> str:
     return datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")).strftime("%H:%M")
+
+
+def parse_time_to_minutes(time_str: str) -> int:
+    """Parses 'HH:MM' string to minutes since start of day."""
+    try:
+        parts = time_str.split(":")
+        return int(parts[0]) * 60 + int(parts[1])
+    except (ValueError, IndexError, AttributeError):
+        return -1
 
 
 def apply_status_override(
@@ -47,6 +57,7 @@ def build_nearby_attractions(
     realtime_status: Dict[str, Any],
     user_profile: Optional[Dict[str, Any]],
     weather: Dict[str, Any],
+    current_time: str,
 ) -> List[Dict[str, Any]]:
     nearby_attractions = []
 
@@ -56,13 +67,42 @@ def build_nearby_attractions(
             continue
 
         realtime = get_realtime_status_by_id(realtime_status, nearby.get("attraction_id"))
+        realtime_copy = deepcopy(realtime) if realtime else {}
+
+        # Time-aware Show Scheduler Logic
+        starts_in_mins = None
+        is_upcoming_soon = False
+        showtimes = realtime_copy.get("upcoming_showtimes") or []
+        curr_mins = parse_time_to_minutes(current_time)
+
+        # Check if park is open (09:00 - 21:00). If closed, force attraction status to closed.
+        if curr_mins >= 0 and not (9 * 60 <= curr_mins <= 21 * 60):
+            realtime_copy["status"] = "closed"
+
+        if showtimes and curr_mins >= 0:
+            valid_diffs = []
+            for showtime in showtimes:
+                show_mins = parse_time_to_minutes(showtime)
+                if show_mins >= 0:
+                    diff = show_mins - curr_mins
+                    if diff >= 0:  # Show is in the future or starting now
+                        valid_diffs.append((diff, showtime))
+            
+            if valid_diffs:
+                valid_diffs.sort()
+                starts_in_mins = valid_diffs[0][0]
+                is_upcoming_soon = starts_in_mins <= 30
+
+        realtime_copy["starts_in_mins"] = starts_in_mins
+        realtime_copy["is_upcoming_soon"] = is_upcoming_soon
+
         nearby_attractions.append(
             {
                 "attraction": attraction,
                 "distance_meters": nearby.get("distance_meters"),
                 "walking_time_mins": nearby.get("walking_time_mins"),
-                "realtime_status": realtime,
-                "safety_flags": get_safety_flags(attraction, realtime, user_profile, weather),
+                "realtime_status": realtime_copy,
+                "safety_flags": get_safety_flags(attraction, realtime_copy, user_profile, weather),
             }
         )
 
@@ -90,7 +130,13 @@ def build_wonder_path_context(
         or get_current_time()
     )
     user_profile = input_data.get("user_profile")
-    weather = input_data.get("weather_override") or mock_data["weather"]["current"]
+    
+    # Try fetching real weather, fallback to mock if override is absent
+    weather = input_data.get("weather_override")
+    if not weather:
+        real_weather = fetch_real_weather()
+        weather = real_weather or mock_data["weather"]["current"]
+
     realtime_status = apply_status_override(
         mock_data["realtime_status"],
         input_data.get("status_override"),
@@ -106,6 +152,7 @@ def build_wonder_path_context(
         realtime_status,
         user_profile,
         weather,
+        current_time,
     )
 
     return {
@@ -118,4 +165,5 @@ def build_wonder_path_context(
         "nearby_attractions": nearby_attractions,
         "safety_summary": build_safety_summary(nearby_attractions, user_profile, weather),
     }
+
 

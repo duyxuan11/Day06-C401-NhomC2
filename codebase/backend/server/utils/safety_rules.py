@@ -65,7 +65,7 @@ def get_safety_flags(
 ) -> List[str]:
     flags = []
 
-    if is_bad_weather(weather) and is_outdoor(attraction):
+    if is_bad_weather(weather) and is_outdoor(attraction) and attraction.get("category") != "rest_area":
         flags.append("blocked_by_red_weather")
 
     if is_unavailable(realtime_status):
