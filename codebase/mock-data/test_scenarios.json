@@ -210,5 +210,36 @@
         }
       ]
     }
+  },
+  {
+    "id": "scenario_06_realtime_weather",
+    "name": "Kịch bản 6: Real-time Weather Integration - Đọc thời tiết thực tế từ API Open-Meteo",
+    "description": "Kiểm thử khả năng hệ thống tự động kết nối API Open-Meteo để lấy thời tiết thực tế khi trường weather_override không được cung cấp.",
+    "input_context": {
+      "qr_station_id": "qr_station_01",
+      "scan_time": "10:00",
+      "user_profile": {
+        "min_age": 5,
+        "max_age": 35,
+        "min_height_cm": 105
+      },
+      "status_override": {}
+    },
+    "expected_behavior": {
+      "ai_decision": "Lấy thời tiết thực tế từ Open-Meteo API. Trong điều kiện thời tiết thực tế (nắng nóng hoặc bình thường), AI đề xuất 'Show Rồng lửa' sắp diễn ra lúc 10:15 và trò 'Lâu đài huyền bí' lân cận.",
+      "suggested_message": "Chào mừng gia đình bạn đến với Khu Cổ Tích! Thời tiết hiện tại nắng ấm rất đẹp. WonderPath gợi ý lịch trình...",
+      "ui_buttons": [
+        {
+          "label": "Xem Show Rồng Lửa (10:15)",
+          "action": "navigate",
+          "target_id": "att_show_fire_dragon"
+        },
+        {
+          "label": "Chơi Lâu Đài Huyền Bí",
+          "action": "navigate",
+          "target_id": "att_magic_castle"
+        }
+      ]
+    }
   }
 ]
