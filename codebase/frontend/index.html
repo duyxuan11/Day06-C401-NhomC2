@@ -592,6 +592,7 @@
       sessionProfile = { group_type: tempGroupType };
       if (tempGroupType === 'family_with_kids') {
         sessionProfile.child_height = parseInt(inputChildHeight.value);
+        sessionProfile.min_height_cm = parseInt(inputChildHeight.value);
       }
       
       showToast("👤 Đã lưu thiết lập cá nhân!", "👤");
@@ -938,15 +939,17 @@
 
       const payload = {
         current_station_id: currentStationId,
+        current_time: currentTime,
         scan_time: currentTime,
-        weather: weatherCondition,
+        weather_condition: weatherCondition,
         user_profile: sessionProfile,
+        is_coaster_maintenance: isCoasterMaint,
         user_message: userInput
       };
 
       try {
-        // Try calling the Python backend
-        const response = await fetch('http://localhost:8000/api/recommend', {
+        // Try calling the Python backend on port 8001
+        const response = await fetch('http://localhost:8001/api/recommend', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
@@ -958,6 +961,9 @@
         return data;
       } catch (err) {
         console.warn("Lỗi kết nối Backend Python (chưa bật server hoặc lỗi CORS). Chuyển sang Offline Mock Mode:", err);
+        showToast("⚠️ Dùng giả lập (chưa bật server / chưa có API key)", "🤖");
+        // Add a slight delay to mimic backend delay when falling back
+        await new Promise(resolve => setTimeout(resolve, 300));
         return runLocalMockRecommendation(userInput);
       }
     }
