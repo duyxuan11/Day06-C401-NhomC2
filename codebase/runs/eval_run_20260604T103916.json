@@ -1,0 +1,119 @@
+{
+  "timestamp": "2026-06-04T10:39:16.689035",
+  "model_name": "gemini-3.1-flash-lite",
+  "dry_run": false,
+  "summary": {
+    "total": 4,
+    "passed": 3,
+    "failed": 1,
+    "accuracy": 0.75
+  },
+  "details": [
+    {
+      "id": "scenario_01_happy_path",
+      "name": "Kịch bản 1: Happy Path - Gia đình có bé nhỏ quét QR tại Cổng Khu Cổ Tích lúc 10:00 sáng",
+      "passed": true,
+      "mismatch_reason": "Khớp hoàn toàn hành động nút bấm.",
+      "actual": {
+        "message": "Chào gia đình! Tại trạm 1, bé có thể trải nghiệm Lâu Đài Huyền Bí ngay gần đây (chờ 15p) hoặc đón xem Show Rồng Lửa lúc 10:15. Chúc gia đình có buổi sáng vui vẻ!",
+        "ui_buttons": [
+          {
+            "label": "Đến Lâu Đài Huyền Bí",
+            "action": "navigate",
+            "target_id": "att_magic_castle"
+          },
+          {
+            "label": "Xem Show Rồng Lửa",
+            "action": "navigate",
+            "target_id": "att_show_fire_dragon"
+          },
+          {
+            "label": "Tìm chỗ ăn trưa",
+            "action": "suggest_dining",
+            "data": null,
+            "target_id": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_02_low_confidence",
+      "name": "Kịch bản 2: Low-confidence Path - Quét QR nhưng thiếu thông tin loại nhóm (chưa chọn profile)",
+      "passed": true,
+      "mismatch_reason": "Khớp hoàn toàn hành động nút bấm.",
+      "actual": {
+        "message": "Chào mừng bạn đến với Khu Cổ Tích! Để WonderPath AI thiết kế lịch trình phù hợp nhất, bạn vui lòng cho biết nhóm mình gồm những ai nhé?",
+        "ui_buttons": [
+          {
+            "label": "Gia đình có trẻ nhỏ",
+            "action": "update_profile",
+            "data": {},
+            "target_id": null
+          },
+          {
+            "label": "Nhóm bạn trẻ năng động",
+            "action": "update_profile",
+            "data": {},
+            "target_id": null
+          },
+          {
+            "label": "Người cao tuổi",
+            "action": "update_profile",
+            "data": {},
+            "target_id": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_03_failure_maintenance",
+      "name": "Kịch bản 3: Failure Path (Bảo trì/Quá tải) - Nhóm bạn trẻ quét QR tại Ngã Tư Phiêu Lưu muốn chơi Tàu lượn siêu tốc nhưng trò này đột ngột bảo trì",
+      "passed": false,
+      "mismatch_reason": "Thiếu nút bấm với hành động 'navigate' với target_id 'att_swing_carousel' (Kỳ vọng nhãn: 'Chỉ đường tới Đu Quay Dây Văng')",
+      "actual": {
+        "message": "Chào nhóm bạn ưa mạo hiểm! Tàu lượn đang bảo trì, mình gợi ý bạn trải nghiệm Đường Trượt Nước Lốc Xoáy (30p chờ) hoặc dùng bữa nhanh tại Khu Ẩm Thực gần đây.",
+        "ui_buttons": [
+          {
+            "label": "Đường Trượt Nước",
+            "action": "navigate",
+            "target_id": "att_water_slide"
+          },
+          {
+            "label": "Ẩm Thực Nhanh",
+            "action": "navigate",
+            "target_id": "att_food_court_fast"
+          },
+          {
+            "label": "Đổi phương án khác",
+            "action": "request_alternative"
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_04_weather_emergency",
+      "name": "Kịch bản 4: Correction/Emergency Path - Đang quét QR thì trời bất ngờ đổ dông bão (Stormy)",
+      "passed": true,
+      "mismatch_reason": "Khớp hoàn toàn hành động nút bấm.",
+      "actual": {
+        "message": "Cảnh báo thời tiết đỏ! Do dông bão, vui lòng di chuyển ngay đến các khu vực trong nhà an toàn. Tôi đề xuất bạn đến Khu vui chơi KidZone hoặc Chòi nghỉ mát ven hồ gần đó để trú ẩn.",
+        "ui_buttons": [
+          {
+            "label": "Đến KidZone (Trong nhà)",
+            "action": "navigate",
+            "target_id": "att_indoor_playground"
+          },
+          {
+            "label": "Chòi nghỉ mát ven hồ",
+            "action": "navigate",
+            "target_id": "att_lakeside_gazebo"
+          },
+          {
+            "label": "Đổi phương án khác",
+            "action": "request_alternative"
+          }
+        ]
+      }
+    }
+  ]
+}
