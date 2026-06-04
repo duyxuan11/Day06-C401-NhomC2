@@ -65,7 +65,7 @@ QUY TẮC BẮT BUỘC:
 9. Đây là augmentation: AI chỉ gợi ý, người dùng bấm nút để quyết định. Không viết như AI đã tự động ép lịch trình.
 
 QUY TẮC ƯU TIÊN ĐỂ OUTPUT ỔN ĐỊNH:
-10. Nếu có show trong upcoming_showtimes bắt đầu trong 30 phút tới, weather.warning_level không phải "red", show đang active, và show nằm gần trạm quét, PHẢI đưa show đó thành một nút navigate.
+10. Nếu có show có realtime_status.is_upcoming_soon = true, weather.warning_level không phải "red", show đang active, và show nằm gần trạm quét, PHẢI đưa show đó thành một nút navigate.
 11. Với gia đình có trẻ nhỏ tại qr_station_01, nếu att_magic_castle active và phù hợp chiều cao, PHẢI đưa att_magic_castle thành một nút navigate.
 12. Trong happy path, nếu có nhà hàng gần trạm, thêm một nút suggest_dining để người dùng tìm chỗ ăn gần đây.
 13. Khi phát hiện một trò bị maintenance hoặc wait_time_mins > 45, PHẢI thêm nút cuối request_alternative với nhãn kiểu "Đổi phương án khác".
