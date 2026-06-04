@@ -1,0 +1,192 @@
+{
+  "timestamp": "2026-06-04T14:48:36.941257",
+  "model_name": "gemini-flash-latest",
+  "dry_run": false,
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0,
+    "accuracy": 1.0,
+    "total_latency_seconds": 42.599,
+    "avg_latency_seconds": 7.1,
+    "total_prompt_tokens": 17797,
+    "total_completion_tokens": 1100,
+    "total_tokens": 25604,
+    "avg_tokens_per_call": 4267.3
+  },
+  "details": [
+    {
+      "id": "scenario_01_happy_path",
+      "name": "Kịch bản 1: Happy Path - Gia đình có bé nhỏ quét QR tại Cổng Khu Cổ Tích lúc 10:00 sáng",
+      "passed": true,
+      "mismatch_reason": "Khớp hoàn toàn hành động nút bấm.",
+      "latency_seconds": 7.431,
+      "prompt_tokens": 2967,
+      "completion_tokens": 210,
+      "total_tokens": 4430,
+      "actual": {
+        "message": "Chào mừng quý khách đến với Khu Cổ Tích! WonderPath gợi ý bạn ghé thăm Lâu Đài Huyền Bí hoặc đón xem Show Diễn Rồng Lửa đặc sắc sắp khởi chiếu lúc 10:15. Hãy chọn điểm đến yêu thích để nhận chỉ đường ngay nhé!",
+        "ui_buttons": [
+          {
+            "label": "Xem Show Rồng Lửa (10:15)",
+            "action": "navigate",
+            "target_id": "att_show_fire_dragon"
+          },
+          {
+            "label": "Khám phá Lâu Đài Huyền Bí",
+            "action": "navigate",
+            "target_id": "att_magic_castle"
+          },
+          {
+            "label": "Tìm chỗ ăn uống gần đây",
+            "action": "suggest_dining",
+            "target_id": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_02_low_confidence",
+      "name": "Kịch bản 2: Low-confidence Path - Quét QR nhưng thiếu thông tin loại nhóm (chưa chọn profile)",
+      "passed": true,
+      "mismatch_reason": "Khớp hoàn toàn hành động nút bấm.",
+      "latency_seconds": 8.171,
+      "prompt_tokens": 2859,
+      "completion_tokens": 210,
+      "total_tokens": 4139,
+      "actual": {
+        "message": "Chào mừng bạn đến với Khu Cổ Tích! Bạn có thể bắt đầu ngay hành trình kỳ ảo tại Lâu Đài Huyền Bí chỉ cách vài bước chân, hoặc chia sẻ thêm thông tin nhóm để tôi cá nhân hóa lộ trình tốt nhất cho bạn nhé.",
+        "ui_buttons": [
+          {
+            "label": "Đến Lâu Đài Huyền Bí",
+            "action": "navigate",
+            "data": null,
+            "target_id": "att_magic_castle"
+          },
+          {
+            "label": "Cá nhân hóa lộ trình",
+            "action": "update_profile",
+            "data": null,
+            "target_id": null
+          },
+          {
+            "label": "Tìm chỗ ăn uống gần đây",
+            "action": "suggest_dining",
+            "data": null,
+            "target_id": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_03_failure_maintenance",
+      "name": "Kịch bản 3: Failure Path (Bảo trì/Quá tải) - Nhóm bạn trẻ quét QR tại Ngã Tư Phiêu Lưu muốn chơi Tàu lượn siêu tốc nhưng trò này đột ngột bảo trì",
+      "passed": true,
+      "mismatch_reason": "Khớp hoàn toàn hành động nút bấm.",
+      "latency_seconds": 6.292,
+      "prompt_tokens": 3348,
+      "completion_tokens": 203,
+      "total_tokens": 4597,
+      "actual": {
+        "message": "Chào bạn! Do Tàu Lượn Siêu Tốc đang bảo trì, bạn có thể thử cảm giác bay lượn với Đu Quay Dây Văng hoặc ghé Khu Ẩm Thực Nhanh Express gần đó để nạp năng lượng nhé.",
+        "ui_buttons": [
+          {
+            "label": "Đến Đu Quay Dây Văng",
+            "action": "navigate",
+            "target_id": "att_swing_carousel"
+          },
+          {
+            "label": "Đến Khu Ẩm Thực Nhanh",
+            "action": "navigate",
+            "target_id": "att_food_court_fast"
+          },
+          {
+            "label": "Đổi phương án khác",
+            "action": "request_alternative",
+            "target_id": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_04_weather_emergency",
+      "name": "Kịch bản 4: Correction/Emergency Path - Đang quét QR thì trời bất ngờ đổ dông bão (Stormy)",
+      "passed": true,
+      "mismatch_reason": "Khớp hoàn toàn hành động nút bấm.",
+      "latency_seconds": 8.199,
+      "prompt_tokens": 3068,
+      "completion_tokens": 186,
+      "total_tokens": 4323,
+      "actual": {
+        "message": "Thời tiết đang có giông bão lớn, quý khách hãy nhanh chóng di chuyển đến nơi trú ẩn an toàn. WonderPath gợi ý bạn tạm lánh tại Chòi Nghỉ Mát Ven Hồ ngay gần đây (30m) hoặc di chuyển đến Khu Vui Chơi Trong Nhà KidZone (250m).",
+        "ui_buttons": [
+          {
+            "label": "Trú mưa tại Chòi Ven Hồ (30m)",
+            "action": "navigate",
+            "target_id": "att_lakeside_gazebo"
+          },
+          {
+            "label": "Đến Khu Trong Nhà KidZone (250m)",
+            "action": "navigate",
+            "target_id": "att_indoor_playground"
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_05_queue_overload",
+      "name": "Kịch bản 5: Queue Overload Path - Nhóm bạn trẻ quét QR tại Công Viên Nước nhưng Đường Trượt Nước quá tải (>45 phút)",
+      "passed": true,
+      "mismatch_reason": "Khớp hoàn toàn hành động nút bấm.",
+      "latency_seconds": 6.217,
+      "prompt_tokens": 2588,
+      "completion_tokens": 157,
+      "total_tokens": 3867,
+      "actual": {
+        "message": "Chào bạn! Đường Trượt Nước Lốc Xoáy hiện đang có thời gian chờ khá dài (50 phút). Bạn có muốn ghé Khu Ẩm Thực Nhanh Express cách đây chỉ 3 phút đi bộ để nạp năng lượng trước không?",
+        "ui_buttons": [
+          {
+            "label": "Đến Khu Ẩm Thực Express",
+            "action": "navigate",
+            "target_id": "att_food_court_fast"
+          },
+          {
+            "label": "Đổi phương án khác",
+            "action": "request_alternative",
+            "target_id": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_06_realtime_weather",
+      "name": "Kịch bản 6: Real-time Weather Integration - Đọc thời tiết thực tế từ API Open-Meteo",
+      "passed": true,
+      "mismatch_reason": "Khớp hoàn toàn hành động nút bấm.",
+      "latency_seconds": 6.289,
+      "prompt_tokens": 2967,
+      "completion_tokens": 134,
+      "total_tokens": 4248,
+      "actual": {
+        "message": "Chào mừng bạn đến với Khu Cổ Tích! Show Diễn Rồng Lửa đặc sắc sắp bắt đầu lúc 10:15 và Lâu Đài Huyền Bí đang rất sẵn sàng chào đón cả gia đình trải nghiệm.",
+        "ui_buttons": [
+          {
+            "label": "Xem Show Rồng Lửa (10:15)",
+            "action": "navigate",
+            "target_id": "att_show_fire_dragon"
+          },
+          {
+            "label": "Khám phá Lâu Đài Huyền Bí",
+            "action": "navigate",
+            "target_id": "att_magic_castle"
+          },
+          {
+            "label": "Tìm nơi ăn uống gần đây",
+            "action": "suggest_dining",
+            "target_id": null
+          }
+        ]
+      }
+    }
+  ]
+}
