@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WonderPath AI — Trợ lý dẫn đường ngữ cảnh</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f1f5f9;
+    }
+    .glassmorphism {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    /* Hide scrollbar but keep functionality */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Pulsing animation for active status */
+    @keyframes pulse-custom {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .5; transform: scale(0.95); }
+    }
+    .pulse-dot {
+      animation: pulse-custom 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-800 flex items-center justify-center p-4 md:p-8">
+
+  <div class="w-full flex flex-col items-center justify-center py-4">
+    <!-- Header/Title for the web page -->
+    <div class="text-center mb-6 max-w-md">
+      <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center justify-center gap-2">
+        <span class="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center text-white text-base">🗺️</span>
+        WonderPath AI
+      </h1>
+      <p class="text-xs text-slate-500 mt-1.5 font-medium">Trợ lý dẫn đường công viên · Bản thử nghiệm chat & quét QR</p>
+    </div>
+
+    <!-- Phone Mockup Device Frame Container -->
+    <div class="flex justify-center">
+      
+      <!-- Phone Mockup Device Frame -->
+      <div class="w-[360px] h-[720px] bg-slate-900 rounded-[50px] p-3 shadow-2xl border-4 border-slate-700 relative flex flex-col overflow-hidden">
+        
+        <!-- Camera Notch & Top Speaker -->
+        <div class="absolute top-4 left-1/2 -translate-x-1/2 w-32 h-5 bg-slate-900 rounded-b-xl z-50 flex items-center justify-center gap-2">
+          <div class="w-12 h-1 bg-slate-800 rounded"></div>
+          <div class="w-2.5 h-2.5 bg-slate-800 rounded-full"></div>
+        </div>
+
+        <!-- Phone Screen Container -->
+        <div class="w-full h-full bg-slate-50 rounded-[38px] overflow-hidden flex flex-col justify-between relative shadow-inner">
+          
+          <!-- Screen Header -->
+          <div class="bg-white border-b border-slate-100 px-6 pt-8 pb-3 flex items-center justify-between z-10">
+            <div class="flex items-center gap-2">
+              <div class="w-2.5 h-2.5 bg-green-500 rounded-full pulse-dot"></div>
+              <div>
+                <div class="text-sm font-bold text-slate-800">WonderPath AI</div>
+                <div class="text-[10px] text-slate-400">Trợ lý dẫn đường công viên</div>
+              </div>
+            </div>
+            <div class="text-xs font-semibold text-slate-400" id="phone-clock">09:45 AM</div>
+          </div>
+
+          <!-- Chat logs viewport scrollbar hidden -->
+          <div id="chat-viewport" class="flex-1 overflow-y-auto px-4 py-4 space-y-4 no-scrollbar bg-slate-50">
+            
+            <!-- Welcome System Message -->
+            <div class="text-center">
+              <span class="inline-block px-3 py-1 bg-slate-200 text-[10px] text-slate-500 rounded-full font-medium" id="chat-date">Hôm nay, 09:45 AM</span>
+            </div>
+
+            <!-- Messages Area (Rendered Dynamically) -->
+            <div id="messages-container" class="space-y-4">
+              <!-- Initial Welcome Bot Message -->
+              <div class="flex items-start gap-2.5">
+                <!-- Avatar -->
+                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center border border-indigo-200 flex-shrink-0">
+                  <span class="text-sm">🤖</span>
+                </div>
+                <!-- Chat Bubble Card -->
+                <div class="bg-white border border-indigo-50 rounded-2xl rounded-tl-none p-4 max-w-[85%] shadow-sm space-y-3">
+                  <div class="text-xs font-bold text-indigo-600 flex items-center gap-1.5">
+                    <span>📍 Trạm quét QR</span>
+                  </div>
+                  <p class="text-[11px] text-slate-600 leading-relaxed font-semibold">
+                    Chào mừng bạn đến với WonderPath AI! Vui lòng quét mã QR tại các trạm thông tin (nhấp nút 📲 Quét mã QR ở dưới) hoặc nhập tin nhắn chat để bắt đầu.<br><br>
+                    💡 Bạn có thể chat để thay đổi ngữ cảnh giả lập:<br>
+                    • Nhập <b>"mưa"</b> hoặc <b>"dông bão"</b> để giả lập thời tiết xấu.<br>
+                    • Nhập <b>"bảo trì"</b> để giả lập tàu lượn bảo trì.<br>
+                    • Nhập <b>"bình thường"</b> để đặt lại trạng thái nắng ấm.<br>
+                    • Nhập <b>"gia đình"</b>, <b>"cảm giác mạnh"</b> hoặc <b>"thư giãn"</b> để đổi nhóm du khách.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Toast Alert Overlay Container (Floats over the bottom of screen) -->
+          <div id="toast-container" class="absolute bottom-28 left-4 right-4 z-40 transition-all duration-300 transform translate-y-24 opacity-0 pointer-events-none">
+            <div class="glassmorphism rounded-2xl p-3 shadow-lg flex items-center justify-between gap-3 border border-orange-200">
+              <div class="flex items-center gap-2.5 flex-1 min-w-0">
+                <span class="text-base flex-shrink-0" id="toast-icon">🗺️</span>
+                <p class="text-[11px] font-medium text-slate-700 truncate" id="toast-message">Đang dẫn đường tới Lâu Đài Huyền Bí...</p>
+              </div>
+              <button id="btn-undo" class="text-[11px] font-bold text-orange-600 hover:text-orange-700 flex-shrink-0 bg-orange-100 px-2.5 py-1 rounded-lg">Hoàn tác</button>
+            </div>
+          </div>
+
+          <!-- QR Scanner Modal Bottom Sheet -->
+          <div id="qr-modal" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-30 transition-all duration-300 opacity-0 pointer-events-none flex flex-col justify-end">
+            <!-- Modal Content -->
+            <div class="bg-white rounded-t-[32px] p-5 space-y-4 transform translate-y-full transition-transform duration-300 shadow-2xl" id="qr-modal-content">
+              <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <span>📲 Mô phỏng Quét mã QR</span>
+                </h3>
+                <button id="btn-close-qr" class="text-slate-400 hover:text-slate-600 text-sm font-semibold p-1">✕</button>
+              </div>
+              <div class="space-y-2.5 max-h-[280px] overflow-y-auto no-scrollbar">
+                <button class="w-full text-left p-3 rounded-xl border border-slate-100 hover:bg-orange-50/50 hover:border-orange-200 transition-all text-[11px] font-semibold text-slate-700 flex items-center justify-between" onclick="scanStation('qr_station_01', 'Trạm 1 - Cổng Khu Cổ Tích')">
+                  <span>Trạm 1 - Cổng Khu Cổ Tích</span>
+                  <span class="text-orange-500 font-bold">➔</span>
+                </button>
+                <button class="w-full text-left p-3 rounded-xl border border-slate-100 hover:bg-orange-50/50 hover:border-orange-200 transition-all text-[11px] font-semibold text-slate-700 flex items-center justify-between" onclick="scanStation('qr_station_02', 'Trạm 2 - Ngã Tư Phiêu Lưu')">
+                  <span>Trạm 2 - Ngã Tư Phiêu Lưu</span>
+                  <span class="text-orange-500 font-bold">➔</span>
+                </button>
+                <button class="w-full text-left p-3 rounded-xl border border-slate-100 hover:bg-orange-50/50 hover:border-orange-200 transition-all text-[11px] font-semibold text-slate-700 flex items-center justify-between" onclick="scanStation('qr_station_03', 'Trạm 3 - Bến Thuyền Hồ Trung Tâm')">
+                  <span>Trạm 3 - Bến Thuyền Hồ Trung Tâm</span>
+                  <span class="text-orange-500 font-bold">➔</span>
+                </button>
+                <button class="w-full text-left p-3 rounded-xl border border-slate-100 hover:bg-orange-50/50 hover:border-orange-200 transition-all text-[11px] font-semibold text-slate-700 flex items-center justify-between" onclick="scanStation('qr_station_04', 'Trạm 4 - Cổng Công Viên Nước')">
+                  <span>Trạm 4 - Cổng Công Viên Nước</span>
+                  <span class="text-orange-500 font-bold">➔</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chat Input Bar -->
+          <div class="bg-white border-t border-slate-100 px-3 py-2 flex items-center gap-2 z-10">
+            <div class="flex-1 flex items-center bg-slate-100 rounded-full px-3 py-1.5 border border-slate-200 focus-within:ring-2 focus-within:ring-orange-500 focus-within:bg-white focus-within:border-orange-400 transition-all">
+              <input type="text" id="chat-input" placeholder="Hỏi WonderPath..." class="w-full bg-transparent border-none text-xs focus:outline-none text-slate-800" autocomplete="off">
+            </div>
+            <button id="btn-send" class="w-8 h-8 bg-orange-500 hover:bg-orange-600 rounded-full flex items-center justify-center text-white transition active:scale-95 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Bottom Navigation Bar (Matching user's screenshot layout) -->
+          <div class="bg-white border-t border-slate-100 px-6 py-2.5 flex items-center justify-around z-10 select-none">
+            <div class="flex flex-col items-center cursor-pointer text-slate-400 hover:text-orange-500 transition">
+              <span class="text-lg">🗺️</span>
+              <span class="text-[9px] font-bold mt-0.5">Bản đồ</span>
+            </div>
+            
+            <!-- Active QR scan circle button -->
+            <div class="flex flex-col items-center justify-center">
+              <button id="btn-ai-assist" class="w-10 h-10 bg-orange-500 hover:bg-orange-600 rounded-full shadow-md flex items-center justify-center text-white text-base transition-transform hover:scale-105 active:scale-95 mb-0.5">
+                📲
+              </button>
+              <span class="text-[9px] font-bold text-orange-500">Quét mã QR</span>
+            </div>
+
+            <div class="flex flex-col items-center cursor-pointer text-slate-400 hover:text-orange-500 transition">
+              <span class="text-lg">👤</span>
+              <span class="text-[9px] font-bold mt-0.5">Cá nhân</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Constants & Global State
+    let sessionProfile = null;
+    let currentStationId = 'qr_station_01';
+    let currentTime = '10:00';
+    let weatherCondition = 'sunny';
+    let isCoasterMaint = false;
+    let undoTimeout = null;
+
+    // UI Nodes
+    const messagesContainer = document.getElementById('messages-container');
+    const chatViewport = document.getElementById('chat-viewport');
+    const phoneClock = document.getElementById('phone-clock');
+    const chatDate = document.getElementById('chat-date');
+    const toastContainer = document.getElementById('toast-container');
+    const toastMessage = document.getElementById('toast-message');
+    const toastIcon = document.getElementById('toast-icon');
+    const btnUndo = document.getElementById('btn-undo');
+
+    // Chat UI Nodes
+    const chatInput = document.getElementById('chat-input');
+    const btnSend = document.getElementById('btn-send');
+
+    // QR Sheet UI Nodes
+    const btnAiAssist = document.getElementById('btn-ai-assist');
+    const qrModal = document.getElementById('qr-modal');
+    const qrModalContent = document.getElementById('qr-modal-content');
+    const btnCloseQr = document.getElementById('btn-close-qr');
+
+    // Init Clock & Date
+    function updateClock() {
+      const now = new Date();
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      minutes = minutes < 10 ? '0' + minutes : minutes;
+      phoneClock.textContent = `${hours}:${minutes} ${ampm}`;
+      chatDate.textContent = `Hôm nay, ${hours}:${minutes} ${ampm}`;
+    }
+    updateClock();
+    setInterval(updateClock, 60000);
+
+    // Helpers to create HTML elements
+    function appendScanNotification(stationName) {
+      const div = document.createElement('div');
+      div.className = 'text-center my-3';
+      div.innerHTML = `<span class="inline-block px-3 py-1 bg-slate-200 text-[10px] text-slate-500 rounded-full font-medium">📲 Quét mã tại ${stationName}</span>`;
+      messagesContainer.appendChild(div);
+      chatViewport.scrollTo({ top: chatViewport.scrollHeight, behavior: 'smooth' });
+    }
+
+    function appendUserMessage(text) {
+      const div = document.createElement('div');
+      div.className = 'flex items-start justify-end gap-2.5';
+      div.innerHTML = `
+        <div class="bg-orange-500 text-white rounded-2xl rounded-tr-none py-3 px-4 max-w-[85%] shadow-sm text-xs font-semibold leading-relaxed">
+          ${text}
+        </div>
+      `;
+      messagesContainer.appendChild(div);
+      chatViewport.scrollTo({ top: chatViewport.scrollHeight, behavior: 'smooth' });
+    }
+
+    function appendLoadingMessage() {
+      const div = document.createElement('div');
+      div.id = 'loading-bubble';
+      div.className = 'flex items-start gap-2.5';
+      div.innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center border border-indigo-200 flex-shrink-0">
+          <span class="text-sm">🤖</span>
+        </div>
+        <div class="bg-white border border-indigo-50 rounded-2xl rounded-tl-none p-4 max-w-[85%] shadow-sm">
+          <div class="flex items-center gap-1.5">
+            <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+            <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+          </div>
+        </div>
+      `;
+      messagesContainer.appendChild(div);
+      chatViewport.scrollTo({ top: chatViewport.scrollHeight, behavior: 'smooth' });
+    }
+
+    function removeLoadingMessage() {
+      const loadingBubble = document.getElementById('loading-bubble');
+      if (loadingBubble) {
+        loadingBubble.remove();
+      }
+    }
+
+    function appendBotMessageCard(response) {
+      // Decode weather icon
+      let weatherIcon = '☀️';
+      let weatherText = 'Nắng ấm 31°C';
+      if (response.weather_condition) {
+        const cond = response.weather_condition;
+        if (cond === 'stormy') { weatherIcon = '⛈️'; weatherText = 'Dông bão 24°C'; }
+        else if (cond === 'rainy') { weatherIcon = '🌧️'; weatherText = 'Mưa rào 26°C'; }
+        else if (cond === 'extreme_heat') { weatherIcon = '🥵'; weatherText = 'Nắng gắt 39°C'; }
+      }
+
+      // Station context matching
+      const stationsData = {
+        qr_station_01: 'Trạm 1 - Cổng Cổ Tích',
+        qr_station_02: 'Trạm 2 - Ngã Tư Phiêu Lưu',
+        qr_station_03: 'Trạm 3 - Bến Thuyền Hồ Trung Tâm',
+        qr_station_04: 'Trạm 4 - Cổng Công Viên Nước'
+      };
+      const stationName = stationsData[currentStationId] || 'Trạm quét QR';
+
+      const div = document.createElement('div');
+      div.className = 'flex items-start gap-2.5';
+      
+      let buttonsHtml = '';
+      if (response.ui_buttons && response.ui_buttons.length > 0) {
+        buttonsHtml = `<div class="space-y-2 pt-2">`;
+        response.ui_buttons.forEach((btn, index) => {
+          let btnStyleClass = 'border border-cyan-400 text-cyan-600 hover:bg-cyan-50';
+          if (index === 0 && btn.action !== 'update_profile') {
+            // Primary action (matching brown design from screenshot)
+            btnStyleClass = 'bg-[#9C4B0C] hover:bg-amber-900 text-white';
+          } else if (btn.action === 'update_profile') {
+            btnStyleClass = 'border border-indigo-400 text-indigo-600 hover:bg-indigo-50';
+          } else if (btn.label.includes('🚨') || btn.label.includes('Chỉ đường trú')) {
+            btnStyleClass = 'bg-red-600 hover:bg-red-700 text-white animate-pulse';
+          }
+
+          buttonsHtml += `
+            <button 
+              class="w-full rounded-2xl py-3 px-4 font-semibold text-[10px] transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-sm ${btnStyleClass}"
+              onclick="handleButtonClick('${btn.label}', '${btn.action}', '${btn.target_id || ''}', ${JSON.stringify(btn.data || {}).replace(/"/g, '&quot;')})"
+            >
+              <span>${btn.label}</span>
+            </button>
+          `;
+        });
+        buttonsHtml += `</div>`;
+      }
+
+      // Image placeholder (Map illustration matching screenshot)
+      let mapImageHtml = '';
+      if (response.ui_buttons && response.ui_buttons.some(b => b.action === 'navigate')) {
+        mapImageHtml = `
+          <div class="relative w-full rounded-xl overflow-hidden shadow-inner border border-slate-100 my-2">
+            <img src="https://images.unsplash.com/photo-1596464716127-f2a82984de30?q=80&w=400" alt="Bản đồ chỉ dẫn" class="w-full h-28 object-cover">
+            <div class="absolute bottom-2 left-2 bg-slate-900/80 text-white text-[9px] px-2 py-0.5 rounded-full flex items-center gap-1 font-semibold backdrop-blur-sm">
+              <span>🚶 5 phút</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // Custom warning layout if emergency
+      const isEmergency = response.message.includes('⚠️') || response.message.includes('CẢNH BÁO');
+      const cardBorder = isEmergency ? 'border-red-200' : 'border-slate-100';
+      const cardBg = isEmergency ? 'bg-red-50/50' : 'bg-white';
+
+      div.innerHTML = `
+        <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center border border-indigo-200 flex-shrink-0">
+          <span class="text-sm">🤖</span>
+        </div>
+        <div class="${cardBg} border ${cardBorder} rounded-3xl rounded-tl-none p-4 max-w-[85%] shadow-sm space-y-3">
+          
+          <!-- Context bar -->
+          <div class="flex items-center justify-between text-[10px] text-slate-500 border-b border-slate-100 pb-2">
+            <div class="flex items-center gap-1 font-semibold">
+              <span class="text-orange-500">📍</span>
+              <span class="truncate max-w-[110px]">${stationName}</span>
+            </div>
+            <div class="flex items-center gap-1 font-semibold text-cyan-600">
+              <span>${weatherIcon}</span>
+              <span>${weatherText}</span>
+            </div>
+          </div>
+
+          <!-- Message Text -->
+          <p class="text-xs text-slate-700 leading-relaxed font-medium">
+            ${response.message.replace(/\n/g, '<br>')}
+          </p>
+
+          <!-- Map indicator -->
+          ${mapImageHtml}
+
+          <!-- Option Buttons -->
+          ${buttonsHtml}
+
+        </div>
+      `;
+      messagesContainer.appendChild(div);
+      chatViewport.scrollTo({ top: chatViewport.scrollHeight, behavior: 'smooth' });
+    }
+
+    // Trigger Scan function (STANDALONE CLIENT-SIDE LOGIC)
+    async function triggerScan() {
+      // 1. Append scan notification
+      const stationsData = {
+        qr_station_01: 'Trạm 1 - Cổng Cổ Tích',
+        qr_station_02: 'Trạm 2 - Ngã Tư Phiêu Lưu',
+        qr_station_03: 'Trạm 3 - Bến Thuyền Hồ Trung Tâm',
+        qr_station_04: 'Trạm 4 - Cổng Công Viên Nước'
+      };
+      const stationNameText = stationsData[currentStationId] || 'Trạm quét QR';
+      appendScanNotification(stationNameText);
+      
+      // 2. Append loading
+      appendLoadingMessage();
+
+      // 3. Simulate delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      removeLoadingMessage();
+
+      let responseData = null;
+
+      // 4. Decision Tree for Simulated Path
+      if (weatherCondition === 'stormy') {
+        // Kịch bản 4: Thời tiết khẩn cấp dông bão (Emergency alert)
+        responseData = {
+          message: "⚠️ CẢNH BÁO THỜI TIẾT XẤU: Hiện tại trời đang có dông sét nguy hiểm ngoài trời! Để đảm bảo an toàn cho gia đình, WonderPath khuyên bạn di chuyển NGAY vào các khu vực trú ẩn trong nhà.\nĐiểm trú ẩn an toàn gần bạn nhất:\n1. 'Khu Vui Chơi Trong Nhà KidZone' (cách 250m, trong nhà mát mẻ, có ghế ngồi cho người lớn và chỗ chơi cho bé).\n2. 'Chòi Nghỉ Mát Ven Hồ' (ngay gần bạn cách 30m, có mái che tạm thời).",
+          ui_buttons: [
+            {
+              label: "🚨 Chỉ đường trú mưa KidZone",
+              action: "navigate",
+              target_id: "att_indoor_playground"
+            },
+            {
+              label: "Chỉ đường tới Chòi Nghỉ Ven Hồ",
+              action: "navigate",
+              target_id: "att_lakeside_gazebo"
+            }
+          ]
+        };
+      } else if (!sessionProfile) {
+        // Kịch bản 2: Thiếu thông tin phân loại (Low confidence)
+        responseData = {
+          message: `Chào bạn! Bạn đang ở ${stationNameText}. Để WonderPath gợi ý lịch trình 1-2 tiếng tới phù hợp nhất cho bạn, vui lòng cho mình biết bạn đang đi cùng ai nhé?`,
+          ui_buttons: [
+            {
+              label: "Gia đình có trẻ nhỏ 👨‍👩‍👧‍👦",
+              action: "update_profile",
+              data: { group_type: "family_with_kids" }
+            },
+            {
+              label: "Nhóm bạn trẻ cảm giác mạnh 🎢",
+              action: "update_profile",
+              data: { group_type: "thrill_seekers" }
+            },
+            {
+              label: "Đi thong thả nghỉ dưỡng 🍃",
+              action: "update_profile",
+              data: { group_type: "leisure" }
+            }
+          ]
+        };
+      } else if (currentStationId === 'qr_station_02' && isCoasterMaint) {
+        // Kịch bản 3: Điểm gãy do bảo trì trò chơi (Failure path)
+        responseData = {
+          message: "Chào nhóm bạn trẻ năng động! Bạn đang ở Ngã Tư Phiêu Lưu. Tiếc quá, trò 'Tàu Lượn Siêu Tốc' ngay gần bạn đang tạm dừng bảo trì kỹ thuật định kỳ. \nĐừng lo, WonderPath gợi ý bạn thử sức với:\n1. 'Đu Quay Dây Văng' (cách 600m đi bộ, chờ xếp hàng chỉ 10 phút, cảm giác bay lượn cực thích).\n2. Ăn nhẹ nạp năng lượng tại 'Khu Ẩm Thực Nhanh Express' cách bạn 150m.\nBạn thấy sao?",
+          ui_buttons: [
+            {
+              label: "Chỉ đường tới Đu Quay Dây Văng",
+              action: "navigate",
+              target_id: "att_swing_carousel"
+            },
+            {
+              label: "Ghé Khu Ẩm Thực Nhanh Express",
+              action: "navigate",
+              target_id: "att_food_court_fast"
+            },
+            {
+              label: "Đổi phương án khác",
+              action: "request_alternative"
+            }
+          ]
+        };
+      } else {
+        // Kịch bản 1: Happy Path thông thường (Theo profile)
+        if (sessionProfile.group_type === 'thrill_seekers') {
+          responseData = {
+            message: `Chào nhóm bạn trẻ! Thời tiết hiện tại nắng ấm (31°C) rất đẹp. WonderPath gợi ý lịch trình mạo hiểm trong 1-2 tiếng tới tại khu vực lân cận ${stationNameText} cho các bạn:\n1. Chơi 'Tàu Lượn Siêu Tốc' (cách 80m, chờ xếp hàng 45 phút, cảm giác mạnh cực đỉnh).\n2. Ăn nhẹ tại 'Khu Ẩm Thực Nhanh Express' (cách 150m, chờ 10 phút).\nCác bạn muốn bắt đầu từ đâu?`,
+            ui_buttons: [
+              {
+                label: "Chơi Tàu Lượn Siêu Tốc",
+                action: "navigate",
+                target_id: "att_roller_coaster"
+              },
+              {
+                label: "Ghé Khu Ẩm Thực Nhanh Express",
+                action: "navigate",
+                target_id: "att_food_court_fast"
+              },
+              {
+                label: "Đổi phương án khác",
+                action: "request_alternative"
+              }
+            ]
+          };
+        } else if (sessionProfile.group_type === 'leisure') {
+          responseData = {
+            message: `Chào bạn! Thời tiết hiện tại ấm áp dễ chịu. WonderPath gợi ý lịch trình thư thả nghỉ dưỡng 1-2 tiếng tới gần ${stationNameText}:\n1. Đi dạo quanh 'Hồ Trung Tâm' và dừng chân tại 'Chòi Nghỉ Mát Ven Hồ' (cách 30m, không khí mát mẻ tự nhiên).\n2. Xem 'Show Nhạc Nước Sắc Màu' (cách 100m, diễn ra lúc 19:00 hàng ngày).\nChúc bạn có những giây phút thư giãn tuyệt vời!`,
+            ui_buttons: [
+              {
+                label: "Chỉ đường tới Chòi Nghỉ Ven Hồ",
+                action: "navigate",
+                target_id: "att_lakeside_gazebo"
+              },
+              {
+                label: "Xem thông tin Show Nhạc Nước",
+                action: "navigate",
+                target_id: "att_show_water_music"
+              }
+            ]
+          };
+        } else {
+          // Default: Family with kids (Kịch bản Happy Path trong SPEC)
+          responseData = {
+            message: `Chào mừng gia đình bạn đến với ${stationNameText}! Thời tiết hiện tại nắng ấm (31°C) rất đẹp. WonderPath gợi ý lịch trình 1-2 tiếng tới cho gia đình mình như sau:\n1. Xem 'Show Rồng Lửa' bắt đầu lúc 10:15 ở Sân khấu trung tâm (cách 350m, đi bộ khoảng 5 phút).\n2. Chơi 'Lâu Đài Huyền Bí' (cách 50m, chờ xếp hàng 15 phút, trò chơi trong nhà mát mẻ phù hợp cho bé).\nBạn muốn làm gì tiếp theo?`,
+            ui_buttons: [
+              {
+                label: "Xem Show Rồng Lửa (10:15)",
+                action: "navigate",
+                target_id: "att_show_fire_dragon"
+              },
+              {
+                label: "Chơi Lâu Đài Huyền Bí",
+                action: "navigate",
+                target_id: "att_magic_castle"
+              },
+              {
+                label: "Tìm nhà hàng ăn trưa gần đây",
+                action: "suggest_dining"
+              }
+            ]
+          };
+        }
+      }
+
+      // Render response
+      appendBotMessageCard({
+        ...responseData,
+        weather_condition: weatherCondition
+      });
+    }
+
+    // Keyword & Intent Matching Chatbot logic
+    function getBotResponse(userText) {
+      const text = userText.toLowerCase().trim();
+      
+      // 1. Weather/Storm scenario trigger
+      if (text.includes("mưa") || text.includes("bão") || text.includes("dông") || text.includes("sét") || text.includes("storm") || text.includes("rain")) {
+        weatherCondition = "stormy";
+        return {
+          message: "⚠️ CẢNH BÁO THỜI TIẾT XẤU: Hiện tại trời đang có dông sét nguy hiểm ngoài trời! Để đảm bảo an toàn cho gia đình, WonderPath khuyên bạn di chuyển NGAY vào các khu vực trú ẩn trong nhà.\nĐiểm trú ẩn an toàn gần bạn nhất:\n1. 'Khu Vui Chơi Trong Nhà KidZone' (cách 250m, trong nhà mát mẻ, có ghế ngồi cho người lớn và chỗ chơi cho bé).\n2. 'Chòi Nghỉ Mát Ven Hồ' (ngay gần bạn cách 30m, có mái che tạm thời).",
+          ui_buttons: [
+            {
+              label: "🚨 Chỉ đường trú mưa KidZone",
+              action: "navigate",
+              target_id: "att_indoor_playground"
+            },
+            {
+              label: "Chỉ đường tới Chòi Nghỉ Ven Hồ",
+              action: "navigate",
+              target_id: "att_lakeside_gazebo"
+            }
+          ]
+        };
+      }
+      
+      // 2. Maintenance scenario trigger
+      if (text.includes("bảo trì") || text.includes("hỏng") || text.includes("sửa") || text.includes("tàu lượn") || text.includes("coaster") || text.includes("siêu tốc")) {
+        isCoasterMaint = true;
+        currentStationId = 'qr_station_02'; // Ngã Tư Phiêu Lưu where Coaster is
+        return {
+          message: "Chào bạn! Bạn đang ở Ngã Tư Phiêu Lưu. Tiếc quá, trò 'Tàu Lượn Siêu Tốc' ngay gần bạn đang tạm dừng bảo trì kỹ thuật định kỳ. \nĐừng lo, WonderPath gợi ý bạn thử sức với:\n1. 'Đu Quay Dây Văng' (cách 600m đi bộ, chờ xếp hàng chỉ 10 phút, cảm giác bay lượn cực thích).\n2. Ăn nhẹ nạp năng lượng tại 'Khu Ẩm Thực Nhanh Express' cách bạn 150m.\nBạn thấy sao?",
+          ui_buttons: [
+            {
+              label: "Chỉ đường tới Đu Quay Dây Văng",
+              action: "navigate",
+              target_id: "att_swing_carousel"
+            },
+            {
+              label: "Ghé Khu Ẩm Thực Nhanh Express",
+              action: "navigate",
+              target_id: "att_food_court_fast"
+            },
+            {
+              label: "Đổi phương án khác",
+              action: "request_alternative"
+            }
+          ]
+        };
+      }
+      
+      // 3. Reset/Normal scenario trigger
+      if (text.includes("bình thường") || text.includes("nắng") || text.includes("mở cửa lại") || text.includes("reset") || text.includes("hết mưa")) {
+        weatherCondition = "sunny";
+        isCoasterMaint = false;
+        return {
+          message: "Đã cập nhật trạng thái công viên về bình thường (Trời nắng ấm ☀️, các trò chơi hoạt động ổn định). Bạn muốn mình gợi ý lộ trình thế nào?",
+          ui_buttons: [
+            {
+              label: "Lịch trình gia đình 👨‍👩‍👧‍👦",
+              action: "update_profile",
+              data: { group_type: "family_with_kids" }
+            },
+            {
+              label: "Lịch trình cảm giác mạnh 🎢",
+              action: "update_profile",
+              data: { group_type: "thrill_seekers" }
+            },
+            {
+              label: "Lịch trình thong thả 🍃",
+              action: "update_profile",
+              data: { group_type: "leisure" }
+            }
+          ]
+        };
+      }
+
+      // 4. Intent matching for profile settings
+      if (text.includes("gia đình") || text.includes("trẻ nhỏ") || text.includes("có bé") || text.includes("trẻ em") || text.includes("family")) {
+        sessionProfile = { group_type: "family_with_kids" };
+        const stationsData = {
+          qr_station_01: 'Trạm 1 - Cổng Cổ Tích',
+          qr_station_02: 'Trạm 2 - Ngã Tư Phiêu Lưu',
+          qr_station_03: 'Trạm 3 - Bến Thuyền Hồ Trung Tâm',
+          qr_station_04: 'Trạm 4 - Cổng Công Viên Nước'
+        };
+        const stationNameText = stationsData[currentStationId] || 'Trạm hiện tại';
+        return {
+          message: `Chào mừng gia đình bạn đến với ${stationNameText}! Thời tiết hiện tại nắng ấm (31°C) rất đẹp. WonderPath gợi ý lịch trình 1-2 tiếng tới cho gia đình mình như sau:\n1. Xem 'Show Rồng Lửa' bắt đầu lúc 10:15 ở Sân khấu trung tâm (cách 350m, đi bộ khoảng 5 phút).\n2. Chơi 'Lâu Đài Huyền Bí' (cách 50m, chờ xếp hàng 15 phút, trò chơi trong nhà mát mẻ phù hợp cho bé).\nBạn muốn làm gì tiếp theo?`,
+          ui_buttons: [
+            {
+              label: "Xem Show Rồng Lửa (10:15)",
+              action: "navigate",
+              target_id: "att_show_fire_dragon"
+            },
+            {
+              label: "Chơi Lâu Đài Huyền Bí",
+              action: "navigate",
+              target_id: "att_magic_castle"
+            },
+            {
+              label: "Tìm nhà hàng ăn trưa gần đây",
+              action: "suggest_dining"
+            }
+          ]
+        };
+      }
+
+      if (text.includes("cảm giác mạnh") || text.includes("mạo hiểm") || text.includes("thrill") || text.includes("nhóm trẻ") || text.includes("bạn trẻ")) {
+        sessionProfile = { group_type: "thrill_seekers" };
+        const stationsData = {
+          qr_station_01: 'Trạm 1 - Cổng Cổ Tích',
+          qr_station_02: 'Trạm 2 - Ngã Tư Phiêu Lưu',
+          qr_station_03: 'Trạm 3 - Bến Thuyền Hồ Trung Tâm',
+          qr_station_04: 'Trạm 4 - Cổng Công Viên Nước'
+        };
+        const stationNameText = stationsData[currentStationId] || 'Trạm hiện tại';
+        return {
+          message: `Chào nhóm bạn trẻ! Thời tiết hiện tại nắng ấm (31°C) rất đẹp. WonderPath gợi ý lịch trình mạo hiểm trong 1-2 tiếng tới tại khu vực lân cận ${stationNameText} cho các bạn:\n1. Chơi 'Tàu Lượn Siêu Tốc' (cách 80m, chờ xếp hàng 45 phút, cảm giác mạnh cực đỉnh).\n2. Ăn nhẹ tại 'Khu Ẩm Thực Nhanh Express' (cách 150m, chờ 10 phút).\nCác bạn muốn bắt đầu từ đâu?`,
+          ui_buttons: [
+            {
+              label: "Chơi Tàu Lượn Siêu Tốc",
+              action: "navigate",
+              target_id: "att_roller_coaster"
+            },
+            {
+              label: "Ghé Khu Ẩm Thực Nhanh Express",
+              action: "navigate",
+              target_id: "att_food_court_fast"
+            },
+            {
+              label: "Đổi phương án khác",
+              action: "request_alternative"
+            }
+          ]
+        };
+      }
+
+      if (text.includes("thư giãn") || text.includes("thong thả") || text.includes("nghỉ dưỡng") || text.includes("nhẹ nhàng") || text.includes("leisure")) {
+        sessionProfile = { group_type: "leisure" };
+        const stationsData = {
+          qr_station_01: 'Trạm 1 - Cổng Cổ Tích',
+          qr_station_02: 'Trạm 2 - Ngã Tư Phiêu Lưu',
+          qr_station_03: 'Trạm 3 - Bến Thuyền Hồ Trung Tâm',
+          qr_station_04: 'Trạm 4 - Cổng Công Viên Nước'
+        };
+        const stationNameText = stationsData[currentStationId] || 'Trạm hiện tại';
+        return {
+          message: `Chào bạn! Thời tiết hiện tại ấm áp dễ chịu. WonderPath gợi ý lịch trình thư thả nghỉ dưỡng 1-2 tiếng tới gần ${stationNameText}:\n1. Đi dạo quanh 'Hồ Trung Tâm' và dừng chân tại 'Chòi Nghỉ Mát Ven Hồ' (cách 30m, không khí mát mẻ tự nhiên).\n2. Xem 'Show Nhạc Nước Sắc Màu' (cách 100m, diễn ra lúc 19:00 hàng ngày).\nChúc bạn có những giây phút thư giãn tuyệt vời!`,
+          ui_buttons: [
+            {
+              label: "Chỉ đường tới Chòi Nghỉ Ven Hồ",
+              action: "navigate",
+              target_id: "att_lakeside_gazebo"
+            },
+            {
+              label: "Xem thông tin Show Nhạc Nước",
+              action: "navigate",
+              target_id: "att_show_water_music"
+            }
+          ]
+        };
+      }
+
+      // 5. Basic greetings/help
+      if (text.includes("chào") || text.includes("hi") || text.includes("hello")) {
+        return {
+          message: "Xin chào! Mình là WonderPath AI. Mình có thể giúp bạn gợi ý lịch trình vi mô (1-2 tiếng), chỉ đường đi, cập nhật thời tiết và trạng thái vận hành của công viên.\n\nHãy cho mình biết nhóm du khách của bạn thuộc loại nào (Gia đình có trẻ nhỏ, nhóm bạn trẻ thích cảm giác mạnh, hay đi nghỉ dưỡng nhẹ nhàng) để mình gợi ý lộ trình phù hợp nhất nhé!",
+          ui_buttons: [
+            {
+              label: "Gia đình có trẻ nhỏ 👨‍👩‍👧‍👦",
+              action: "update_profile",
+              data: { group_type: "family_with_kids" }
+            },
+            {
+              label: "Nhóm bạn trẻ cảm giác mạnh 🎢",
+              action: "update_profile",
+              data: { group_type: "thrill_seekers" }
+            },
+            {
+              label: "Đi thong thả nghỉ dưỡng 🍃",
+              action: "update_profile",
+              data: { group_type: "leisure" }
+            }
+          ]
+        };
+      }
+
+      // 6. Generic conversational handler (Fallback chatbot response)
+      return {
+        message: `Cảm ơn bạn đã nhắn: "${userText}". Mình ghi nhận thông tin này để tối ưu hóa lộ trình. Bạn có muốn mình tạo gợi ý lịch trình mới theo nhu cầu cụ thể không?`,
+        ui_buttons: [
+          {
+            label: "Gợi ý lịch trình mới ✨",
+            action: "request_alternative"
+          },
+          {
+            label: "Tìm nhà hàng ăn trưa gần đây 🍔",
+            action: "suggest_dining"
+          }
+        ]
+      };
+    }
+
+    // Send chat message logic
+    async function sendChatMessage() {
+      const userText = chatInput.value.trim();
+      if (!userText) return;
+
+      // Clear input
+      chatInput.value = '';
+
+      // Append user bubble
+      appendUserMessage(userText);
+
+      // Append loading bubble
+      appendLoadingMessage();
+
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      removeLoadingMessage();
+
+      // Get response & render
+      const responseData = getBotResponse(userText);
+      appendBotMessageCard({
+        ...responseData,
+        weather_condition: weatherCondition
+      });
+    }
+
+    // QR modal trạm scan logic
+    function showQrModal() {
+      qrModal.classList.remove('opacity-0', 'pointer-events-none');
+      qrModalContent.classList.remove('translate-y-full');
+      qrModalContent.classList.add('translate-y-0');
+    }
+
+    function hideQrModal() {
+      qrModalContent.classList.remove('translate-y-0');
+      qrModalContent.classList.add('translate-y-full');
+      setTimeout(() => {
+        qrModal.classList.add('opacity-0', 'pointer-events-none');
+      }, 300);
+    }
+
+    function scanStation(stationId, stationName) {
+      currentStationId = stationId;
+      hideQrModal();
+      triggerScan();
+    }
+
+    // Trigger button link action
+    function handleButtonClick(label, action, targetId, data) {
+      console.log(`Action clicked: ${label} (${action})`, targetId, data);
+      
+      if (action === 'navigate') {
+        showToast(`🗺️ Đang vẽ lộ trình di chuyển tới ${label}...`, '🗺️');
+      } else if (action === 'update_profile') {
+        if (data && data.group_type) {
+          sessionProfile = { group_type: data.group_type };
+          showToast(`👤 Đã thiết lập nhóm du khách: ${label}`, '👤');
+          // Automatically trigger update request
+          setTimeout(triggerScan, 800);
+        }
+      } else if (action === 'suggest_dining') {
+        showToast(`🍔 Đang tìm các quán ăn gần nhất...`, '🍔');
+      } else if (action === 'request_alternative') {
+        showToast(`🔄 Đang tìm các phương án vui chơi khác...`, '🔄');
+        setTimeout(triggerScan, 800);
+      }
+    }
+
+    // Toast alerts logic
+    function showToast(message, icon) {
+      if (undoTimeout) {
+        clearTimeout(undoTimeout);
+      }
+
+      toastMessage.textContent = message;
+      toastIcon.textContent = icon || '🗺️';
+      
+      toastContainer.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+      toastContainer.classList.add('translate-y-0', 'opacity-100');
+
+      undoTimeout = setTimeout(hideToast, 5000);
+    }
+
+    function hideToast() {
+      toastContainer.classList.remove('translate-y-0', 'opacity-100');
+      toastContainer.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+    }
+
+    // Event listeners
+    btnSend.addEventListener('click', sendChatMessage);
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendChatMessage();
+      }
+    });
+
+    btnAiAssist.addEventListener('click', showQrModal);
+    btnCloseQr.addEventListener('click', hideQrModal);
+    qrModal.addEventListener('click', (e) => {
+      if (e.target === qrModal) {
+        hideQrModal();
+      }
+    });
+
+    btnUndo.addEventListener('click', () => {
+      showToast('↩️ Đã hoàn tác thao tác vừa thực hiện.', '↩️');
+      setTimeout(hideToast, 1500);
+    });
+  </script>
+</body>
+</html>
