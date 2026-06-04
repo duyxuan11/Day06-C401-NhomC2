@@ -75,6 +75,10 @@ def build_nearby_attractions(
         showtimes = realtime_copy.get("upcoming_showtimes") or []
         curr_mins = parse_time_to_minutes(current_time)
 
+        # Check if park is open (09:00 - 21:00). If closed, force attraction status to closed.
+        if curr_mins >= 0 and not (9 * 60 <= curr_mins <= 21 * 60):
+            realtime_copy["status"] = "closed"
+
         if showtimes and curr_mins >= 0:
             valid_diffs = []
             for showtime in showtimes:

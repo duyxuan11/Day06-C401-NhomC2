@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
-MOCK_DATA_DIR = Path(__file__).resolve().parents[2] / "mock-data"
+MOCK_DATA_DIR = Path(__file__).resolve().parents[3] / "mock-data"
 
 
 def read_json_file(file_name: str, mock_data_dir: Path = MOCK_DATA_DIR) -> Any:
