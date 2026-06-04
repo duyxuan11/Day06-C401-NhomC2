@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import json
 import argparse
 from pathlib import Path
@@ -113,7 +114,7 @@ QUY TẮC XỬ LÝ LỊCH TRÌNH VÀ RỦI RO (FAILURE MODES):
 4. [QUY TẮC LỊCH TRÌNH VI MÔ]: Gợi ý tối đa 2 hoạt động/trò chơi tiếp theo trong vòng 1-2 tiếng tới, nêu rõ lý do lựa chọn ngắn gọn (ví dụ: khoảng cách gần bao nhiêu mét, thời gian chờ bao nhiêu phút, hoặc sắp đến giờ show diễn).
 
 QUY TẮC ƯU TIÊN ĐỂ OUTPUT ỔN ĐỊNH KHI KIỂM THỬ:
-5. Nếu có show trong `upcoming_showtimes` bắt đầu trong 30 phút tới, weather.warning_level không phải "red", show đang active, và show nằm trong danh sách gần trạm quét, PHẢI đưa show đó thành một nút `navigate`. Ví dụ lúc 10:00 phải ưu tiên `att_show_fire_dragon` lúc 10:15.
+5. Nếu có show có realtime_status.is_upcoming_soon = true, weather.warning_level không phải "red", show đang active, và show nằm trong danh sách gần trạm quét, PHẢI đưa show đó thành một nút `navigate`. Ví dụ lúc 10:00 phải ưu tiên `att_show_fire_dragon` lúc 10:15.
 6. Với gia đình có trẻ nhỏ tại `qr_station_01`, nếu `att_magic_castle` active và phù hợp chiều cao, PHẢI đưa `att_magic_castle` thành một nút `navigate`.
 7. Trong happy path, nếu có nhà hàng gần trạm, thêm một nút `suggest_dining` để người dùng tìm chỗ ăn gần đây. Nút `suggest_dining` có thể có hoặc không có `target_id`.
 8. Khi phát hiện một trò bị `maintenance` hoặc wait_time_mins > 45, PHẢI thêm nút cuối `request_alternative` với nhãn kiểu "Đổi phương án khác".
@@ -123,6 +124,16 @@ QUY TẮC ƯU TIÊN ĐỂ OUTPUT ỔN ĐỊNH KHI KIỂM THỬ:
 
 YÊU CẦU ĐẦU RA (OUTPUT FORMAT):
 Bạn PHẢI trả về cấu trúc dữ liệu JSON chính xác theo Schema đã định nghĩa (WonderPathResponse), chứa hai trường: 'message' và 'ui_buttons'."""
+
+
+def parse_time_to_minutes(time_str: str) -> int:
+    """Parses 'HH:MM' string to minutes since start of day."""
+    try:
+        parts = time_str.split(":")
+        return int(parts[0]) * 60 + int(parts[1])
+    except (ValueError, IndexError, AttributeError):
+        return -1
+
 
 def run_evaluation(
     model_name: str, 
@@ -177,6 +188,29 @@ def run_evaluation(
                 att_id = item["attraction_id"]
                 if att_id in override_map:
                     item.update(override_map[att_id])
+        else:
+            realtime = [dict(item) for item in realtime]
+
+        # Calculate time-aware showtime fields (starts_in_mins, is_upcoming_soon)
+        curr_mins = parse_time_to_minutes(scan_time)
+        for item in realtime:
+            starts_in_mins = None
+            is_upcoming_soon = False
+            showtimes = item.get("upcoming_showtimes") or []
+            if showtimes and curr_mins >= 0:
+                valid_diffs = []
+                for showtime in showtimes:
+                    show_mins = parse_time_to_minutes(showtime)
+                    if show_mins >= 0:
+                        diff = show_mins - curr_mins
+                        if diff >= 0:
+                            valid_diffs.append((diff, showtime))
+                if valid_diffs:
+                    valid_diffs.sort()
+                    starts_in_mins = valid_diffs[0][0]
+                    is_upcoming_soon = starts_in_mins <= 30
+            item["starts_in_mins"] = starts_in_mins
+            item["is_upcoming_soon"] = is_upcoming_soon
 
         # Render Prompt
         prompt = SYSTEM_PROMPT_TEMPLATE.format(
@@ -196,13 +230,17 @@ def run_evaluation(
                 "name": sc_name,
                 "passed": True,
                 "mismatch_reason": "Dry run (Bypass API Call)",
+                "latency_seconds": 0.0,
+                "prompt_tokens": 0,
+                "completion_tokens": 0,
+                "total_tokens": 0,
                 "actual": None
             })
             continue
-
         # Call Gemini API
         try:
             model = genai.GenerativeModel(model_name)
+            start_time = time.time()
             response = model.generate_content(
                 prompt,
                 generation_config=genai.GenerationConfig(
@@ -212,6 +250,15 @@ def run_evaluation(
                 ),
                 request_options={"timeout": 30}
             )
+            latency_seconds = time.time() - start_time
+
+            prompt_tokens = 0
+            completion_tokens = 0
+            total_tokens = 0
+            if hasattr(response, "usage_metadata") and response.usage_metadata:
+                prompt_tokens = getattr(response.usage_metadata, "prompt_token_count", 0)
+                completion_tokens = getattr(response.usage_metadata, "candidates_token_count", 0)
+                total_tokens = getattr(response.usage_metadata, "total_token_count", 0)
 
             actual_data = json.loads(response.text)
             actual_buttons = actual_data.get("ui_buttons", [])
@@ -260,7 +307,7 @@ def run_evaluation(
             passed = len(failures) == 0
             mismatch_reason = "; ".join(failures) if not passed else "Khớp hoàn toàn hành động nút bấm."
             
-            print(f"  Result: {'PASS' if passed else 'FAIL'}")
+            print(f"  Result: {'PASS' if passed else 'FAIL'} (Latency: {latency_seconds:.2f}s, Tokens: {total_tokens})")
             if not passed:
                 print(f"  Mismatches: {mismatch_reason}")
                 print(f"  Actual response message: {actual_message}")
@@ -271,31 +318,55 @@ def run_evaluation(
                 "name": sc_name,
                 "passed": passed,
                 "mismatch_reason": mismatch_reason,
+                "latency_seconds": round(latency_seconds, 3),
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
+                "total_tokens": total_tokens,
                 "actual": actual_data
             })
 
         except Exception as e:
+            latency_seconds = time.time() - start_time if 'start_time' in locals() else 0.0
             print(f"  [ERROR] Lỗi khi gọi hoặc parse kết quả từ API: {e}")
             results.append({
                 "id": sc_id,
                 "name": sc_name,
                 "passed": False,
                 "mismatch_reason": f"API Error: {e}",
+                "latency_seconds": round(latency_seconds, 3),
+                "prompt_tokens": 0,
+                "completion_tokens": 0,
+                "total_tokens": 0,
                 "actual": None
             })
 
     # Print summary table
-    print("\n" + "="*80)
-    print(f"{'KỊCH BẢN KIỂM THỬ':<45} | {'TRẠNG THÁI':<10} | {'CHI TIẾT ĐỐI SOÁT'}")
-    print("="*80)
+    print("\n" + "="*120)
+    print(f"{'KỊCH BẢN KIỂM THỬ':<40} | {'TRẠNG THÁI':<10} | {'THỜI GIAN (S)':<12} | {'TOKENS (P/C/T)':<16} | {'CHI TIẾT ĐỐI SOÁT'}")
+    print("="*120)
     passed_count = 0
+    total_lat = 0.0
+    total_p_tok = 0
+    total_c_tok = 0
+    total_t_tok = 0
+
     for r in results:
         status_str = "PASS" if r["passed"] else "FAIL"
-        print(f"{r['name'][:43]:<45} | {status_str:<10} | {r['mismatch_reason']}")
+        latency_str = f"{r.get('latency_seconds', 0.0):.3f}"
+        tokens_str = f"{r.get('prompt_tokens', 0)}/{r.get('completion_tokens', 0)}/{r.get('total_tokens', 0)}"
+        print(f"{r['name'][:38]:<40} | {status_str:<10} | {latency_str:<12} | {tokens_str:<16} | {r['mismatch_reason']}")
         if r["passed"]:
             passed_count += 1
-    print("="*80)
-    print(f"Tổng số: {passed_count}/{len(scenarios)} kịch bản ĐẠT ({round(passed_count/len(scenarios)*100, 2)}%).\n")
+        total_lat += r.get("latency_seconds", 0.0)
+        total_p_tok += r.get("prompt_tokens", 0)
+        total_c_tok += r.get("completion_tokens", 0)
+        total_t_tok += r.get("total_tokens", 0)
+
+    print("="*120)
+    print(f"Tổng số: {passed_count}/{len(scenarios)} kịch bản ĐẠT ({round(passed_count/len(scenarios)*100, 2)}%).")
+    if not dry_run and len(scenarios) > 0:
+        avg_lat = total_lat / len(scenarios)
+        print(f"Hiệu năng trung bình: Latency = {avg_lat:.3f}s | Tổng Tokens tiêu thụ = {total_t_tok} (Prompt: {total_p_tok}, Output: {total_c_tok})\n")
 
     # Save run report
     runs_dir = mock_data_dir.parent / "runs"
@@ -312,7 +383,13 @@ def run_evaluation(
             "total": len(scenarios),
             "passed": passed_count,
             "failed": len(scenarios) - passed_count,
-            "accuracy": passed_count / len(scenarios)
+            "accuracy": passed_count / len(scenarios),
+            "total_latency_seconds": round(total_lat, 3),
+            "avg_latency_seconds": round(total_lat / len(scenarios), 3) if len(scenarios) > 0 else 0.0,
+            "total_prompt_tokens": total_p_tok,
+            "total_completion_tokens": total_c_tok,
+            "total_tokens": total_t_tok,
+            "avg_tokens_per_call": round(total_t_tok / len(scenarios), 1) if len(scenarios) > 0 else 0.0
         },
         "details": results
     }
