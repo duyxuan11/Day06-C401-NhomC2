@@ -21,7 +21,7 @@ if sys.platform.startswith('win'):
         sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 # 1. Load Environment Variables
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parent / "backend" / ".env")
 
 # 2. Define Pydantic Models for Structured Output
 class UIButton(BaseModel):
@@ -83,7 +83,7 @@ GEMINI_RESPONSE_SCHEMA = {
 }
 
 # 3. Import services from codebase
-sys.path.append(str(Path(__file__).resolve().parent))
+sys.path.append(str(Path(__file__).resolve().parent / "backend"))
 from server.services.context_builder import build_wonder_path_context
 from server.ai.prompt import build_wonder_path_prompt
 
@@ -161,6 +161,9 @@ def run_evaluation(
             continue
         # Call Gemini API
         try:
+            if idx > 1:
+                print("Đang nghỉ 12 giây để tránh rate limit (Free Tier)...")
+                time.sleep(12)
             model = genai.GenerativeModel(model_name)
             start_time = time.time()
             response = model.generate_content(
