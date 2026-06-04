@@ -75,6 +75,7 @@ Owner kiểm thử path này là Tạ Duy Xuân.
 |---|---|---|
 | **Nguyễn Huy Bảo** - 2A202600997 | **Đầu việc 1**: Thiết kế Kịch bản & Dữ liệu giả lập | Dữ liệu giả lập các trò chơi, vị trí trạm QR, và trạng thái xếp hàng/thời tiết trong repo. |
 | **Nguyễn Văn Đoan** - 2A202600795 | **Đầu việc 2**: Lập trình Giao diện di động | Code Frontend Web/Zalo Mini App hiển thị Chatbot và Toast thông báo có nút [Undo]. |
-| **Lê Duy Hùng** - 2A202600718 | **Đầu việc 3**: Thiết lập Prompt & AI Logic | System Prompt cho Gemini và định nghĩa cấu trúc JSON đầu vào/đầu ra trong SPEC. |
-| **Phạm Ngọc Vinh** - 2A202600563 | **Đầu việc 4**: Xây dựng Backend & Kết nối API | API Server kết nối Gemini API và Mock API trạng thái công viên. |
+| **Lê Duy Hùng** - 2A202600718 <br> **Trần Hoàng Đạt** 2A202600807 | **Đầu việc 3**: Thiết lập Prompt & AI Logic  & kiểm thử kịch bản & script tính cost LLM  | System Prompt cho Gemini và định nghĩa cấu trúc JSON đầu vào/đầu ra trong SPEC. |
+| **Phạm Ngọc Vinh** - 2A202600563 | **Đầu việc 4**: Xây dựng Backend & Kết nối API| API Server kết nối Gemini API và Mock API trạng thái công viên. |
 | **Tạ Duy Xuân** - 2A202600970 | **Đầu việc 5**: Kiểm thử kịch bản lỗi & Chuẩn bị Demo | Video demo 3 phút + Script thuyết trình + Slide nhóm + Kịch bản kiểm thử Failure Path. |
+
