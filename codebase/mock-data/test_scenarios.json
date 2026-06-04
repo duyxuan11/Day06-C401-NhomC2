@@ -171,9 +171,9 @@
     }
   },
   {
-    "id": "scenario_05_qr_scan_with_user_input",
-    "name": "Kịch bản 5: Quét QR tại Công Viên Nước -> Nhập nhóm đi -> Lấy địa điểm, thời gian -> Lấy thời tiết -> Trả về gợi ý",
-    "description": "Kiểm thử luồng tương tác: Khách quét QR ở Cổng Công Viên Nước lúc 14:30 chiều, khai báo thông tin nhóm tuổi trẻ năng động (tuổi 16-28, chiều cao min=155cm). Hệ thống đọc dữ liệu thời tiết nắng nóng (35°C) để gợi ý các trò chơi nước cảm giác mạnh thích hợp.",
+    "id": "scenario_05_queue_overload",
+    "name": "Kịch bản 5: Queue Overload Path - Nhóm bạn trẻ quét QR tại Công Viên Nước nhưng Đường Trượt Nước quá tải (>45 phút)",
+    "description": "Kiểm thử hành vi khi một địa điểm quá tải (wait_time_mins > 45). AI tự động lọc bỏ trò chơi quá tải, đề xuất ăn uống/nghỉ ngơi tại khu ẩm thực gần đó để giãn đám đông, và cung cấp nút đổi phương án.",
     "input_context": {
       "qr_station_id": "qr_station_04",
       "scan_time": "14:30",
@@ -187,17 +187,18 @@
         "temperature_c": 35,
         "warning_level": "none"
       },
-      "status_override": {}
+      "status_override": {
+        "att_water_slide": {
+          "status": "active",
+          "wait_time_mins": 50,
+          "crowd_level": "high"
+        }
+      }
     },
     "expected_behavior": {
-      "ai_decision": "Phát hiện vị trí tại Cổng Công Viên Nước (qr_station_04), thời tiết nắng nóng (35°C) và đối tượng là nhóm bạn trẻ thích cảm giác mạnh. Gợi ý trò chơi dưới nước 'Đường Trượt Nước Lốc Xoáy' (att_water_slide - cách 60m, cảm giác mạnh, giải nhiệt) và ăn uống giải khát tại 'Khu Ẩm Thực Nhanh Express' (att_food_court_fast - cách 220m).",
-      "suggested_message": "Chào nhóm bạn trẻ thích khám phá! Bạn đang ở Cổng Công Viên Nước. Thời tiết lúc này nắng nóng (35°C), rất lý tưởng để giải nhiệt. WonderPath gợi ý lịch trình 1-2 tiếng tới cho các bạn:\n1. Giải nhiệt cực đã tại 'Đường Trượt Nước Lốc Xoáy' (cách 60m, chờ xếp hàng 35 phút).\n2. Ghé 'Khu Ẩm Thực Nhanh Express' cách 220m để nạp năng lượng và uống nước mát.\nCác bạn đã sẵn sàng chưa?",
+      "ai_decision": "Phát hiện trò chơi chính 'Đường Trượt Nước Lốc Xoáy' (att_water_slide) đang bị quá tải (chờ 50 phút > 45 phút). AI loại bỏ trò này khỏi gợi ý, đề xuất chuyển sang ăn uống giải nhiệt tại 'Khu Ẩm Thực Nhanh Express' (att_food_court_fast - cách 220m) và thêm nút 'Đổi phương án khác'.",
+      "suggested_message": "Chào các bạn! Hiện tại Đường Trượt Nước Lốc Xoáy đang rất đông khách với thời gian chờ lên tới 50 phút. WonderPath gợi ý bạn ghé Khu Ẩm Thực Nhanh Express cách 220m để thưởng thức đồ uống mát lạnh và nghỉ ngơi chờ đám đông hạ nhiệt nhé.",
       "ui_buttons": [
-        {
-          "label": "Trượt Nước Lốc Xoáy",
-          "action": "navigate",
-          "target_id": "att_water_slide"
-        },
         {
           "label": "Ghé Khu Ẩm Thực Express",
           "action": "navigate",
