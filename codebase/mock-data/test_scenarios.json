@@ -1,0 +1,161 @@
+[
+  {
+    "id": "scenario_01_happy_path",
+    "name": "Kịch bản 1: Happy Path - Gia đình có bé nhỏ quét QR tại Cổng Khu Cổ Tích lúc 10:00 sáng",
+    "description": "Kiểm thử hành vi tối ưu thông thường khi mọi thứ hoạt động bình thường, gợi ý các trò chơi gia đình không mạo hiểm và có show diễn sắp bắt đầu.",
+    "input_context": {
+      "qr_station_id": "qr_station_01",
+      "scan_time": "10:00",
+      "user_profile": {
+        "group_type": "family_with_kids",
+        "has_elderly": false,
+        "min_height_cm": 100
+      },
+      "weather_override": {
+        "condition": "sunny",
+        "temperature_c": 31,
+        "warning_level": "none"
+      },
+      "status_override": {}
+    },
+    "expected_behavior": {
+      "ai_decision": "Lọc bỏ các trò chơi mạo hiểm (Tàu lượn siêu tốc) hoặc không phù hợp với chiều cao bé (Đu quay dây văng cần min 120cm). Ưu tiên 'Show Rồng lửa' sắp diễn ra lúc 10:15 (cách 350m, đi bộ 5 phút) và trò 'Lâu đài huyền bí' (cách 50m, chờ 15 phút, trong nhà mát). Gợi ý ăn trưa nhẹ tại 'Nhà Hàng Lâu Đài Cổ Tích'.",
+      "suggested_message": "Chào mừng gia đình bạn đến với Khu Cổ Tích! Thời tiết hiện tại nắng ấm (31°C) rất đẹp. WonderPath gợi ý lịch trình 1-2 tiếng tới cho gia đình mình như sau:\n1. Xem 'Show Rồng Lửa' bắt đầu lúc 10:15 ở Sân khấu trung tâm (cách 350m, đi bộ khoảng 5 phút).\n2. Chơi 'Lâu Đài Huyền Bí' (cách 50m, chờ xếp hàng 15 phút, trò chơi trong nhà mát mẻ phù hợp cho bé).\nBạn muốn làm gì tiếp theo?",
+      "ui_buttons": [
+        {
+          "label": "Xem Show Rồng Lửa (10:15)",
+          "action": "navigate",
+          "target_id": "att_show_fire_dragon"
+        },
+        {
+          "label": "Chơi Lâu Đài Huyền Bí",
+          "action": "navigate",
+          "target_id": "att_magic_castle"
+        },
+        {
+          "label": "Tìm nhà hàng ăn trưa gần đây",
+          "action": "suggest_dining"
+        }
+      ]
+    }
+  },
+  {
+    "id": "scenario_02_low_confidence",
+    "name": "Kịch bản 2: Low-confidence Path - Quét QR nhưng thiếu thông tin loại nhóm (chưa chọn profile)",
+    "description": "Khi hệ thống chưa biết đối tượng du khách là ai (gia đình, cặp đôi hay nhóm bạn), AI cần đưa ra câu hỏi phân loại nhanh thông qua các nút bấm để định hình gợi ý tiếp theo.",
+    "input_context": {
+      "qr_station_id": "qr_station_01",
+      "scan_time": "14:00",
+      "user_profile": null,
+      "weather_override": {
+        "condition": "sunny",
+        "temperature_c": 33,
+        "warning_level": "none"
+      },
+      "status_override": {}
+    },
+    "expected_behavior": {
+      "ai_decision": "Không thể đề xuất lịch trình chính xác do thiếu profile. Đưa ra câu chào thân thiện tại vị trí quét và đưa ra 3 nút bấm phân loại nhanh để cập nhật profile tạm thời của phiên.",
+      "suggested_message": "Chào bạn! Bạn đang ở Cổng Khu Cổ Tích. Để WonderPath gợi ý lịch trình 1-2 tiếng tới phù hợp nhất cho bạn, vui lòng cho mình biết bạn đang đi cùng ai nhé?",
+      "ui_buttons": [
+        {
+          "label": "Gia đình có trẻ nhỏ 👨‍👩‍👧‍👦",
+          "action": "update_profile",
+          "data": { "group_type": "family_with_kids" }
+        },
+        {
+          "label": "Nhóm bạn trẻ thích cảm giác mạnh 🎢",
+          "action": "update_profile",
+          "data": { "group_type": "thrill_seekers" }
+        },
+        {
+          "label": "Đi thong thả nghỉ dưỡng 🍃",
+          "action": "update_profile",
+          "data": { "group_type": "leisure" }
+        }
+      ]
+    }
+  },
+  {
+    "id": "scenario_03_failure_maintenance",
+    "name": "Kịch bản 3: Failure Path (Bảo trì/Quá tải) - Nhóm bạn trẻ quét QR tại Ngã Tư Phiêu Lưu muốn chơi Tàu lượn siêu tốc nhưng trò này đột ngột bảo trì",
+    "description": "Kiểm thử khả năng xử lý lỗi thời gian thực. Khi trò chơi yêu thích/gần nhất đang bảo trì hoặc hàng đợi quá dài (>60 phút), AI tự động phát hiện và chủ động gợi ý phương án thay thế phù hợp.",
+    "input_context": {
+      "qr_station_id": "qr_station_02",
+      "scan_time": "11:00",
+      "user_profile": {
+        "group_type": "thrill_seekers",
+        "has_elderly": false,
+        "min_height_cm": 150
+      },
+      "weather_override": {
+        "condition": "sunny",
+        "temperature_c": 32,
+        "warning_level": "none"
+      },
+      "status_override": {
+        "att_roller_coaster": {
+          "status": "maintenance",
+          "wait_time_mins": 0,
+          "crowd_level": "low"
+        }
+      }
+    },
+    "expected_behavior": {
+      "ai_decision": "Nhận biết trò chơi cảm giác mạnh chính 'Tàu lượn siêu tốc' (att_roller_coaster) đang bảo trì. Thay thế bằng gợi ý 'Đu quay dây văng' (att_swing_carousel - cách 600m, chờ 10 phút, cảm giác mạnh vừa) hoặc gợi ý ăn uống nạp năng lượng tại 'Khu ẩm thực nhanh Express' ngay bên cạnh.",
+      "suggested_message": "Chào nhóm bạn trẻ năng động! Bạn đang ở Ngã Tư Phiêu Lưu. Tiếc quá, trò 'Tàu Lượn Siêu Tốc' ngay gần bạn đang tạm dừng bảo trì kỹ thuật định kỳ. \nĐừng lo, WonderPath gợi ý bạn thử sức với:\n1. 'Đu Quay Dây Văng' (cách 600m đi bộ, chờ xếp hàng chỉ 10 phút, cảm giác bay lượn cực thích).\n2. Ăn nhẹ nạp năng lượng tại 'Khu Ẩm Thực Nhanh Express' cách bạn 150m.\nBạn thấy sao?",
+      "ui_buttons": [
+        {
+          "label": "Chỉ đường tới Đu Quay Dây Văng",
+          "action": "navigate",
+          "target_id": "att_swing_carousel"
+        },
+        {
+          "label": "Ghé Khu Ẩm Thực Nhanh Express",
+          "action": "navigate",
+          "target_id": "att_food_court_fast"
+        },
+        {
+          "label": "Đổi phương án khác",
+          "action": "request_alternative"
+        }
+      ]
+    }
+  },
+  {
+    "id": "scenario_04_weather_emergency",
+    "name": "Kịch bản 4: Correction/Emergency Path - Đang quét QR thì trời bất ngờ đổ dông bão (Stormy)",
+    "description": "Kiểm thử khả năng ứng biến khẩn cấp khi thời tiết chuyển xấu đột ngột. AI tự động lọc bỏ tất cả các trò chơi ngoài trời, hiển thị cảnh báo đỏ và chỉ dẫn nhanh tới nơi trú mưa an toàn gần nhất.",
+    "input_context": {
+      "qr_station_id": "qr_station_03",
+      "scan_time": "15:00",
+      "user_profile": {
+        "group_type": "family_with_kids",
+        "has_elderly": true,
+        "min_height_cm": 90
+      },
+      "weather_override": {
+        "condition": "stormy",
+        "temperature_c": 24,
+        "warning_level": "red"
+      },
+      "status_override": {}
+    },
+    "expected_behavior": {
+      "ai_decision": "Thời tiết ở trạng thái dông sét cảnh báo đỏ (warning_level: red). Ẩn toàn bộ gợi ý trò chơi ngoài trời như Đu quay, Đường trượt nước, Show nhạc nước. AI đề xuất khẩn cấp di chuyển vào 'Khu vui chơi trong nhà KidZone' (cách 250m) có điều hòa trú mưa và có ghế nghỉ ngơi cho người già, hoặc trú tại các chòi nghỉ ven hồ nếu mưa quá to không kịp di chuyển xa.",
+      "suggested_message": "⚠️ CẢNH BÁO THỜI TIẾT XẤU: Hiện tại trời đang có dông sét nguy hiểm ngoài trời! Để đảm bảo an toàn cho gia đình, WonderPath khuyên bạn di chuyển NGAY vào các khu vực trú ẩn trong nhà.\nĐiểm trú ẩn an toàn gần bạn nhất:\n1. 'Khu Vui Chơi Trong Nhà KidZone' (cách 250m, trong nhà mát mẻ, có ghế ngồi cho người lớn và chỗ chơi cho bé).\n2. 'Chòi Nghỉ Mát Ven Hồ' (ngay gần bạn cách 30m, có mái che tạm thời).",
+      "ui_buttons": [
+        {
+          "label": "🚨 Chỉ đường trú mưa KidZone",
+          "action": "navigate",
+          "target_id": "att_indoor_playground"
+        },
+        {
+          "label": "Chỉ đường tới Chòi Nghỉ Ven Hồ",
+          "action": "navigate",
+          "target_id": "att_lakeside_gazebo"
+        }
+      ]
+    }
+  }
+]
