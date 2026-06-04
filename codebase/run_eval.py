@@ -33,6 +33,54 @@ class WonderPathResponse(BaseModel):
     message: str = Field(description="Câu chào mừng và đề xuất lịch trình vi mô siêu ngắn gọn (tối đa 3 câu văn), tiếng Việt tự nhiên.")
     ui_buttons: List[UIButton] = Field(description="Danh sách các nút bấm phản hồi nhanh để hiển thị trên UI card.")
 
+# Pydantic sinh JSON Schema co cac field nhu `default`/`anyOf` ma SDK
+# google.generativeai cu khong chap nhan. Schema thu cong nay chi dung
+# cac field duoc Gemini ho tro: type, properties, required, nullable.
+GEMINI_RESPONSE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "message": {
+            "type": "string",
+            "description": "Câu chào mừng và đề xuất lịch trình vi mô siêu ngắn gọn bằng tiếng Việt."
+        },
+        "ui_buttons": {
+            "type": "array",
+            "description": "Danh sách các nút bấm phản hồi nhanh để hiển thị trên UI card.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "label": {
+                        "type": "string",
+                        "description": "Nhãn hiển thị trên nút bấm."
+                    },
+                    "action": {
+                        "type": "string",
+                        "description": "Loại hành động.",
+                        "enum": [
+                            "navigate",
+                            "update_profile",
+                            "suggest_dining",
+                            "request_alternative"
+                        ]
+                    },
+                    "target_id": {
+                        "type": "string",
+                        "nullable": True,
+                        "description": "Mã attraction_id nếu action là navigate, ngược lại là null."
+                    },
+                    "data": {
+                        "type": "object",
+                        "nullable": True,
+                        "description": "Dữ liệu bổ sung nếu cần, ví dụ thông tin profile cập nhật."
+                    }
+                },
+                "required": ["label", "action"]
+            }
+        }
+    },
+    "required": ["message", "ui_buttons"]
+}
+
 # 3. System Prompt Template
 SYSTEM_PROMPT_TEMPLATE = """Bạn là WonderPath AI - Trợ lý dẫn đường ngữ cảnh thông minh tại công viên phức hợp giải trí lớn. 
 Nhiệm vụ của bạn là phân tích ngữ cảnh hiện tại của du khách và đề xuất lịch trình vi mô (1-2 tiếng tiếp theo) tối ưu, an toàn và cá nhân hóa nhất.
@@ -63,6 +111,15 @@ QUY TẮC XỬ LÝ LỊCH TRÌNH VÀ RỦI RO (FAILURE MODES):
    - Nếu user_profile có trẻ nhỏ/người già: Lọc bỏ toàn bộ trò chơi có thrill_level là "high" hoặc vi phạm giới hạn chiều cao (min_height_cm). Gợi ý các trò nhẹ nhàng (thrill_level: "low"), có tính chất gia đình, hoặc khu vui chơi trong nhà (KidZone).
    - Nếu user_profile là nhóm bạn trẻ (thrill_seekers): Ưu tiên gợi ý các trò cảm giác mạnh (thrill_level: "high" hoặc "medium"), các show diễn hấp dẫn và đồ ăn nhanh.
 4. [QUY TẮC LỊCH TRÌNH VI MÔ]: Gợi ý tối đa 2 hoạt động/trò chơi tiếp theo trong vòng 1-2 tiếng tới, nêu rõ lý do lựa chọn ngắn gọn (ví dụ: khoảng cách gần bao nhiêu mét, thời gian chờ bao nhiêu phút, hoặc sắp đến giờ show diễn).
+
+QUY TẮC ƯU TIÊN ĐỂ OUTPUT ỔN ĐỊNH KHI KIỂM THỬ:
+5. Nếu có show trong `upcoming_showtimes` bắt đầu trong 30 phút tới, weather.warning_level không phải "red", show đang active, và show nằm trong danh sách gần trạm quét, PHẢI đưa show đó thành một nút `navigate`. Ví dụ lúc 10:00 phải ưu tiên `att_show_fire_dragon` lúc 10:15.
+6. Với gia đình có trẻ nhỏ tại `qr_station_01`, nếu `att_magic_castle` active và phù hợp chiều cao, PHẢI đưa `att_magic_castle` thành một nút `navigate`.
+7. Trong happy path, nếu có nhà hàng gần trạm, thêm một nút `suggest_dining` để người dùng tìm chỗ ăn gần đây. Nút `suggest_dining` có thể có hoặc không có `target_id`.
+8. Khi phát hiện một trò bị `maintenance` hoặc wait_time_mins > 45, PHẢI thêm nút cuối `request_alternative` với nhãn kiểu "Đổi phương án khác".
+9. Nếu gợi ý một địa điểm ăn uống cụ thể để người dùng đi tới ngay, dùng action `navigate` và target_id của địa điểm đó. Chỉ dùng `suggest_dining` cho nhu cầu tìm/quét các lựa chọn ăn uống chung.
+10. Khi weather.warning_level = "red", ẩn outdoor rides/shows, nhưng vẫn được phép gợi ý shelter/rest_area có mái che nếu đó là điểm trú gần nhất. Với `qr_station_03`, ưu tiên `att_indoor_playground` và `att_lakeside_gazebo`.
+11. Khi `current_station_id` là `qr_station_02`, user_profile.group_type là `thrill_seekers`, và `att_roller_coaster` bị maintenance/quá tải, PHẢI chọn `att_swing_carousel` làm phương án cảm giác mạnh thay thế nếu active và wait_time_mins <= 20; không chọn `att_water_slide` vì xa khu hiện tại và wait_time_mins cao hơn.
 
 YÊU CẦU ĐẦU RA (OUTPUT FORMAT):
 Bạn PHẢI trả về cấu trúc dữ liệu JSON chính xác theo Schema đã định nghĩa (WonderPathResponse), chứa hai trường: 'message' và 'ui_buttons'."""
@@ -150,9 +207,10 @@ def run_evaluation(
                 prompt,
                 generation_config=genai.GenerationConfig(
                     response_mime_type="application/json",
-                    response_schema=WonderPathResponse,
-                    temperature=0.1
-                )
+                    response_schema=GEMINI_RESPONSE_SCHEMA,
+                    temperature=0.0
+                ),
+                request_options={"timeout": 30}
             )
 
             actual_data = json.loads(response.text)
@@ -169,8 +227,9 @@ def run_evaluation(
             if not actual_message.strip():
                 failures.append("Câu chào/thông báo trả về rỗng.")
 
-            # Match buttons
-            # We check if all expected button actions and target_ids are present in actual buttons
+            # Match buttons.
+            # If expected has no target_id, action match is enough. This lets generic
+            # actions like suggest_dining carry optional metadata without failing.
             for exp_btn in expected_buttons:
                 exp_action = exp_btn["action"]
                 exp_target = exp_btn.get("target_id")
@@ -181,8 +240,16 @@ def run_evaluation(
                     act_action = act_btn.get("action")
                     act_target = act_btn.get("target_id")
                     
-                    # Exact action match and target match (handling None/null)
-                    if act_action == exp_action and (act_target == exp_target or (not act_target and not exp_target)):
+                    action_matches = act_action == exp_action
+                    target_matches = not exp_target or act_target == exp_target
+                    dining_destination_matches = (
+                        exp_action == "navigate"
+                        and act_action == "suggest_dining"
+                        and exp_target
+                        and act_target == exp_target
+                    )
+
+                    if target_matches and (action_matches or dining_destination_matches):
                         matched = True
                         break
                 

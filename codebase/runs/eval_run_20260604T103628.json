@@ -1,0 +1,105 @@
+{
+  "timestamp": "2026-06-04T10:36:28.919888",
+  "model_name": "gemini-3.1-flash-lite",
+  "dry_run": false,
+  "summary": {
+    "total": 4,
+    "passed": 1,
+    "failed": 3,
+    "accuracy": 0.25
+  },
+  "details": [
+    {
+      "id": "scenario_01_happy_path",
+      "name": "Kịch bản 1: Happy Path - Gia đình có bé nhỏ quét QR tại Cổng Khu Cổ Tích lúc 10:00 sáng",
+      "passed": false,
+      "mismatch_reason": "Thiếu nút bấm với hành động 'navigate' với target_id 'att_show_fire_dragon' (Kỳ vọng nhãn: 'Xem Show Rồng Lửa (10:15)'); Thiếu nút bấm với hành động 'suggest_dining' (Kỳ vọng nhãn: 'Tìm nhà hàng ăn trưa gần đây')",
+      "actual": {
+        "message": "Chào gia đình! Với thời tiết nắng nóng, mình gợi ý bạn ghé Lâu Đài Huyền Bí (chỉ 1 phút đi bộ, chờ 15p) rồi dùng bữa trưa tại Nhà Hàng Lâu Đài Cổ Tích ngay gần đó để tránh nắng nhé.",
+        "ui_buttons": [
+          {
+            "label": "Đến Lâu Đài Huyền Bí",
+            "action": "navigate",
+            "target_id": "att_magic_castle"
+          },
+          {
+            "label": "Đến Nhà Hàng Lâu Đài",
+            "action": "suggest_dining",
+            "target_id": "att_castle_restaurant"
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_02_low_confidence",
+      "name": "Kịch bản 2: Low-confidence Path - Quét QR nhưng thiếu thông tin loại nhóm (chưa chọn profile)",
+      "passed": true,
+      "mismatch_reason": "Khớp hoàn toàn hành động nút bấm.",
+      "actual": {
+        "message": "Chào mừng bạn đến với WonderPath! Để mình thiết kế lịch trình vi mô tối ưu và an toàn nhất cho bạn, vui lòng cho biết nhóm của bạn gồm những ai nhé?",
+        "ui_buttons": [
+          {
+            "label": "Gia đình có trẻ nhỏ",
+            "action": "update_profile",
+            "data": {},
+            "target_id": null
+          },
+          {
+            "label": "Nhóm bạn trẻ năng động",
+            "action": "update_profile",
+            "data": {},
+            "target_id": null
+          },
+          {
+            "label": "Người lớn tuổi",
+            "action": "update_profile",
+            "data": {},
+            "target_id": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_03_failure_maintenance",
+      "name": "Kịch bản 3: Failure Path (Bảo trì/Quá tải) - Nhóm bạn trẻ quét QR tại Ngã Tư Phiêu Lưu muốn chơi Tàu lượn siêu tốc nhưng trò này đột ngột bảo trì",
+      "passed": false,
+      "mismatch_reason": "Thiếu nút bấm với hành động 'navigate' với target_id 'att_food_court_fast' (Kỳ vọng nhãn: 'Ghé Khu Ẩm Thực Nhanh Express'); Thiếu nút bấm với hành động 'request_alternative' (Kỳ vọng nhãn: 'Đổi phương án khác')",
+      "actual": {
+        "message": "Chào nhóm bạn ưa mạo hiểm! Vì Tàu Lượn đang bảo trì, mình gợi ý bạn trải nghiệm Đu Quay Dây Văng (10p chờ) rồi ghé Khu Ẩm Thực Nhanh gần đó để nạp năng lượng nhé.",
+        "ui_buttons": [
+          {
+            "label": "Đến Đu Quay Dây Văng",
+            "action": "navigate",
+            "target_id": "att_swing_carousel"
+          },
+          {
+            "label": "Đến Khu Ẩm Thực Nhanh",
+            "action": "suggest_dining",
+            "target_id": "att_food_court_fast"
+          }
+        ]
+      }
+    },
+    {
+      "id": "scenario_04_weather_emergency",
+      "name": "Kịch bản 4: Correction/Emergency Path - Đang quét QR thì trời bất ngờ đổ dông bão (Stormy)",
+      "passed": false,
+      "mismatch_reason": "Thiếu nút bấm với hành động 'navigate' với target_id 'att_lakeside_gazebo' (Kỳ vọng nhãn: 'Chỉ đường tới Chòi Nghỉ Ven Hồ')",
+      "actual": {
+        "message": "Cảnh báo đỏ: Thời tiết dông bão! Để đảm bảo an toàn, vui lòng di chuyển vào các khu vực trong nhà. Bạn đang ở gần Khu Vui Chơi KidZone (trong nhà) hoặc Nhà Hàng Lâu Đài Cổ Tích. Hãy ưu tiên trú ẩn tại đây.",
+        "ui_buttons": [
+          {
+            "label": "Đến Khu Vui Chơi KidZone",
+            "action": "navigate",
+            "target_id": "att_indoor_playground"
+          },
+          {
+            "label": "Đến Nhà Hàng Lâu Đài",
+            "action": "navigate",
+            "target_id": "att_castle_restaurant"
+          }
+        ]
+      }
+    }
+  ]
+}
