@@ -60,35 +60,13 @@
     }
   </style>
 </head>
-<body class="min-h-screen text-slate-800 flex items-center justify-center p-4 md:p-8">
+<body class="min-h-screen text-slate-800 flex flex-col items-center justify-center bg-slate-100 p-0 md:p-4">
 
-  <div class="w-full flex flex-col items-center justify-center py-4">
-    <!-- Header/Title for the web page -->
-    <div class="text-center mb-6 max-w-md">
-      <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center justify-center gap-2">
-        <span class="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center text-white text-base">🗺️</span>
-        WonderPath AI
-      </h1>
-      <p class="text-xs text-slate-500 mt-1.5 font-medium">Trợ lý dẫn đường công viên · Bản thử nghiệm chat & quét QR</p>
-    </div>
-
-    <!-- Phone Mockup Device Frame Container -->
-    <div class="flex justify-center">
-      
-      <!-- Phone Mockup Device Frame -->
-      <div class="w-[360px] h-[720px] bg-slate-900 rounded-[50px] p-3 shadow-2xl border-4 border-slate-700 relative flex flex-col overflow-hidden">
-        
-        <!-- Camera Notch & Top Speaker -->
-        <div class="absolute top-4 left-1/2 -translate-x-1/2 w-32 h-5 bg-slate-900 rounded-b-xl z-50 flex items-center justify-center gap-2">
-          <div class="w-12 h-1 bg-slate-800 rounded"></div>
-          <div class="w-2.5 h-2.5 bg-slate-800 rounded-full"></div>
-        </div>
-
-        <!-- Phone Screen Container -->
-        <div class="w-full h-full bg-slate-50 rounded-[38px] overflow-hidden flex flex-col justify-between relative shadow-inner">
-          
-          <!-- Screen Header -->
-          <div class="bg-white border-b border-slate-100 px-6 pt-8 pb-3 flex items-center justify-between z-10">
+  <!-- App Container (Mobile: full screen, Desktop: centered card) -->
+  <div class="w-full h-[100dvh] md:h-[780px] md:max-w-[425px] bg-slate-50 md:rounded-[32px] md:shadow-2xl md:border md:border-slate-200/80 overflow-hidden flex flex-col justify-between relative shadow-inner">
+    
+    <!-- Screen Header -->
+    <div class="bg-white border-b border-slate-100 px-5 pt-4 pb-3 flex items-center justify-between z-10">
             <div class="flex items-center gap-2">
               <div class="w-2.5 h-2.5 bg-green-500 rounded-full pulse-dot"></div>
               <div>
@@ -171,111 +149,125 @@
                 <button onclick="resetZoom()" class="w-8 h-8 bg-white/90 hover:bg-white text-slate-800 rounded-full shadow-md flex items-center justify-center text-[10px] font-bold active:scale-95 transition border border-slate-200/50 backdrop-blur-sm select-none">🔄</button>
               </div>
 
-              <svg viewBox="0 0 300 400" class="w-full h-full select-none cursor-grab" id="park-svg">
+              <svg viewBox="0 0 700 600" class="w-full h-full select-none cursor-grab" id="park-svg">
                 <!-- Group wrapper for Zoom & Pan -->
                 <g id="map-zoom-group" style="transform-origin: center; transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);">
                   <!-- Background pattern / grass -->
-                  <rect width="300" height="400" fill="#f8fafc" rx="20"/>
+                  <rect width="700" height="600" fill="#f8fafc" rx="20"/>
                   
                   <!-- Forest / Green areas -->
-                  <path d="M 0 0 C 80 0, 120 50, 100 120 C 80 180, 20 220, 0 250 Z" fill="#f1f5f9" opacity="0.6"/>
-                  <path d="M 300 150 C 260 200, 220 220, 240 300 C 260 380, 300 380, 300 400 Z" fill="#f1f5f9" opacity="0.6"/>
+                  <path d="M 0 0 C 150 0, 200 100, 180 240 C 150 350, 40 400, 0 450 Z" fill="#f1f5f9" opacity="0.6"/>
+                  <path d="M 700 200 C 600 300, 500 350, 550 480 C 600 580, 700 580, 700 600 Z" fill="#f1f5f9" opacity="0.6"/>
                   
                   <!-- Central Lake -->
-                  <path d="M 140 80 C 180 60, 250 50, 260 110 C 270 160, 210 170, 170 140 C 140 120, 120 100, 140 80 Z" fill="#e0f2fe" stroke="#bae6fd" stroke-width="2"/>
-                  <text x="200" y="110" fill="#0369a1" font-size="8" font-weight="bold" opacity="0.6" text-anchor="middle">Hồ Trung Tâm</text>
+                  <path d="M 230 270 C 280 200, 400 210, 430 270 C 460 330, 370 370, 310 350 C 250 330, 200 310, 230 270 Z" fill="#e0f2fe" stroke="#bae6fd" stroke-width="2"/>
+                  <text x="325" y="315" fill="#0369a1" font-size="9" font-weight="bold" opacity="0.6" text-anchor="middle">Hồ Trung Tâm</text>
                   
                   <!-- Pathways (Background roads) -->
-                  <path d="M 70 330 L 150 240 M 150 240 L 190 100 M 150 240 L 230 330 M 70 330 C 100 360, 200 360, 230 330" fill="none" stroke="#e2e8f0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M 70 330 L 150 240 M 150 240 L 190 100 M 150 240 L 230 330 M 70 330 C 100 360, 200 360, 230 330" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M 120 340 L 300 300 M 300 300 L 450 210 M 300 300 L 580 480 M 120 340 Q 300 500 580 480" fill="none" stroke="#e2e8f0" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M 120 340 L 300 300 M 300 300 L 450 210 M 300 300 L 580 480 M 120 340 Q 300 500 580 480" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
 
                   <!-- Active / Animated Route Path -->
-                  <path id="nav-route" d="" fill="none" stroke="#f97316" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6,4" class="hidden" />
+                  <path id="nav-route" d="" fill="none" stroke="#f97316" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7,5" class="hidden" />
 
                   <!-- Station Markers -->
                   <!-- Trạm 1: Cổng Cổ Tích -->
                   <g id="marker-qr_station_01" class="cursor-pointer" onclick="scanStation('qr_station_01', 'Trạm 1 - Cổng Cổ Tích')">
-                    <circle cx="70" cy="330" r="12" fill="#fff" stroke="#f97316" stroke-width="2" class="shadow-sm"/>
-                    <circle cx="70" cy="330" r="4" fill="#f97316" id="pulse-qr_station_01"/>
-                    <text x="70" y="352" fill="#475569" font-size="7" font-weight="bold" text-anchor="middle">Trạm 1 (Cổng Cổ Tích)</text>
+                    <circle cx="120" cy="340" r="12" fill="#fff" stroke="#f97316" stroke-width="2" class="shadow-sm"/>
+                    <circle cx="120" cy="340" r="4" fill="#f97316" id="pulse-qr_station_01"/>
+                    <text x="120" y="362" fill="#475569" font-size="8" font-weight="bold" text-anchor="middle">Trạm 1 (Cổng Cổ Tích)</text>
                   </g>
 
                   <!-- Trạm 2: Ngã Tư Phiêu Lưu -->
                   <g id="marker-qr_station_02" class="cursor-pointer" onclick="scanStation('qr_station_02', 'Trạm 2 - Ngã Tư Phiêu Lưu')">
-                    <circle cx="150" cy="240" r="12" fill="#fff" stroke="#f97316" stroke-width="2" class="shadow-sm"/>
-                    <circle cx="150" cy="240" r="4" fill="#f97316" id="pulse-qr_station_02"/>
-                    <text x="150" y="262" fill="#475569" font-size="7" font-weight="bold" text-anchor="middle">Trạm 2 (Phiêu Lưu)</text>
+                    <circle cx="450" cy="210" r="12" fill="#fff" stroke="#f97316" stroke-width="2" class="shadow-sm"/>
+                    <circle cx="450" cy="210" r="4" fill="#f97316" id="pulse-qr_station_02"/>
+                    <text x="450" y="232" fill="#475569" font-size="8" font-weight="bold" text-anchor="middle">Trạm 2 (Phiêu Lưu)</text>
                   </g>
 
                   <!-- Trạm 3: Bến Thuyền -->
                   <g id="marker-qr_station_03" class="cursor-pointer" onclick="scanStation('qr_station_03', 'Trạm 3 - Bến Thuyền')">
-                    <circle cx="190" cy="100" r="12" fill="#fff" stroke="#f97316" stroke-width="2" class="shadow-sm"/>
-                    <circle cx="190" cy="100" r="4" fill="#f97316" id="pulse-qr_station_03"/>
-                    <text x="190" y="122" fill="#475569" font-size="7" font-weight="bold" text-anchor="middle">Trạm 3 (Bến Thuyền)</text>
+                    <circle cx="300" cy="300" r="12" fill="#fff" stroke="#f97316" stroke-width="2" class="shadow-sm"/>
+                    <circle cx="300" cy="300" r="4" fill="#f97316" id="pulse-qr_station_03"/>
+                    <text x="300" y="322" fill="#475569" font-size="8" font-weight="bold" text-anchor="middle">Trạm 3 (Bến Thuyền)</text>
                   </g>
 
                   <!-- Trạm 4: Công Viên Nước -->
                   <g id="marker-qr_station_04" class="cursor-pointer" onclick="scanStation('qr_station_04', 'Trạm 4 - Cổng CV Nước')">
-                    <circle cx="230" cy="330" r="12" fill="#fff" stroke="#f97316" stroke-width="2" class="shadow-sm"/>
-                    <circle cx="230" cy="330" r="4" fill="#f97316" id="pulse-qr_station_04"/>
-                    <text x="230" y="352" fill="#475569" font-size="7" font-weight="bold" text-anchor="middle">Trạm 4 (Cổng CV Nước)</text>
+                    <circle cx="580" cy="480" r="12" fill="#fff" stroke="#f97316" stroke-width="2" class="shadow-sm"/>
+                    <circle cx="580" cy="480" r="4" fill="#f97316" id="pulse-qr_station_04"/>
+                    <text x="580" y="502" fill="#475569" font-size="8" font-weight="bold" text-anchor="middle">Trạm 4 (Cổng CV Nước)</text>
                   </g>
 
                   <!-- Attraction Pins -->
-                  <!-- Show Rồng Lửa (near Trạm 1) -->
+                  <!-- Show Rồng Lửa -->
                   <g id="pin-att_show_fire_dragon" class="opacity-80">
-                    <circle cx="35" cy="300" r="8" fill="#ef4444"/>
-                    <text x="35" y="303" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🐉</text>
-                    <text x="35" y="313" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle">Show Rồng Lửa</text>
+                    <circle cx="260" cy="200" r="8" fill="#ef4444"/>
+                    <text x="260" y="203" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🐉</text>
+                    <text x="260" y="213" fill="#64748b" font-size="7" font-weight="semibold" text-anchor="middle">Show Rồng Lửa</text>
                   </g>
 
-                  <!-- Lâu Đài Huyền Bí (near Trạm 1) -->
+                  <!-- Lâu Đài Huyền Bí -->
                   <g id="pin-att_magic_castle" class="opacity-80">
-                    <circle cx="105" cy="300" r="8" fill="#8b5cf6"/>
-                    <text x="105" y="303" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🏰</text>
-                    <text x="105" y="313" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle">Lâu Đài Cổ</text>
+                    <circle cx="100" cy="290" r="8" fill="#8b5cf6"/>
+                    <text x="100" y="293" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🏰</text>
+                    <text x="100" y="303" fill="#64748b" font-size="7" font-weight="semibold" text-anchor="middle">Lâu Đài Cổ</text>
                   </g>
 
-                  <!-- Tàu Lượn Siêu Tốc (near Trạm 2) -->
+                  <!-- Tàu Lượn Siêu Tốc -->
                   <g id="pin-att_roller_coaster" class="opacity-80">
-                    <circle cx="100" cy="200" r="8" fill="#f59e0b"/>
-                    <text x="100" y="203" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🎢</text>
-                    <text x="100" y="213" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle" id="lbl-roller_coaster">Tàu Lượn</text>
+                    <circle cx="410" cy="150" r="8" fill="#f59e0b"/>
+                    <text x="410" y="153" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🎢</text>
+                    <text x="410" y="163" fill="#64748b" font-size="7" font-weight="semibold" text-anchor="middle" id="lbl-roller_coaster">Tàu Lượn</text>
                   </g>
 
-                  <!-- Đu Quay Dây Văng (near Trạm 2) -->
+                  <!-- Đu Quay Dây Văng -->
                   <g id="pin-att_swing_carousel" class="opacity-80">
-                    <circle cx="200" cy="200" r="8" fill="#10b981"/>
-                    <text x="200" y="203" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🎡</text>
-                    <text x="200" y="213" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle">Đu Quay</text>
+                    <circle cx="60" cy="420" r="8" fill="#10b981"/>
+                    <text x="60" y="423" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🎡</text>
+                    <text x="60" y="433" fill="#64748b" font-size="7" font-weight="semibold" text-anchor="middle">Đu Quay</text>
                   </g>
 
-                  <!-- Fast Food (near Trạm 2) -->
+                  <!-- Fast Food -->
                   <g id="pin-att_food_court_fast" class="opacity-80">
-                    <circle cx="150" cy="300" r="8" fill="#ec4899"/>
-                    <text x="150" y="303" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🍔</text>
-                    <text x="150" y="311" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle">Khu Ẩm Thực</text>
+                    <circle cx="520" cy="320" r="8" fill="#ec4899"/>
+                    <text x="520" y="323" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🍔</text>
+                    <text x="520" y="333" fill="#64748b" font-size="7" font-weight="semibold" text-anchor="middle">Khu Ẩm Thực</text>
                   </g>
 
-                  <!-- KidZone (near Trạm 3) -->
+                  <!-- KidZone -->
                   <g id="pin-att_indoor_playground" class="opacity-80">
-                    <circle cx="135" cy="80" r="8" fill="#06b6d4"/>
-                    <text x="135" y="83" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">👶</text>
-                    <text x="135" y="93" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle">KidZone</text>
+                    <circle cx="200" cy="290" r="8" fill="#06b6d4"/>
+                    <text x="200" y="293" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">👶</text>
+                    <text x="200" y="303" fill="#64748b" font-size="7" font-weight="semibold" text-anchor="middle">KidZone</text>
                   </g>
 
-                  <!-- Gazebo (near Trạm 3) -->
+                  <!-- Gazebo -->
                   <g id="pin-att_lakeside_gazebo" class="opacity-80">
-                    <circle cx="245" cy="80" r="8" fill="#14b8a6"/>
-                    <text x="245" y="83" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🛖</text>
-                    <text x="245" y="93" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle">Chòi Nghỉ</text>
+                    <circle cx="310" cy="330" r="8" fill="#14b8a6"/>
+                    <text x="310" y="333" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🛖</text>
+                    <text x="310" y="343" fill="#64748b" font-size="7" font-weight="semibold" text-anchor="middle">Chòi Nghỉ</text>
                   </g>
 
-                  <!-- Show Nhạc Nước (Lake Center) -->
+                  <!-- Show Nhạc Nước -->
                   <g id="pin-att_show_water_music" class="opacity-80">
-                    <circle cx="190" cy="140" r="8" fill="#3b82f6"/>
-                    <text x="190" y="143" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold"> Fountain⛲</text>
-                    <text x="190" y="153" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle">Nhạc Nước</text>
+                    <circle cx="340" cy="260" r="8" fill="#3b82f6"/>
+                    <text x="340" y="263" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">⛲</text>
+                    <text x="340" y="273" fill="#64748b" font-size="7" font-weight="semibold" text-anchor="middle">Nhạc Nước</text>
+                  </g>
+
+                  <!-- Đường Trượt Nước Lốc Xoáy -->
+                  <g id="pin-att_water_slide" class="opacity-80">
+                    <circle cx="630" cy="440" r="8" fill="#0284c7"/>
+                    <text x="630" y="443" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🌊</text>
+                    <text x="630" y="453" fill="#64748b" font-size="7" font-weight="semibold" text-anchor="middle">Trượt Nước</text>
+                  </g>
+
+                  <!-- Nhà Hàng Lâu Đài Cổ Tích -->
+                  <g id="pin-att_castle_restaurant" class="opacity-80">
+                    <circle cx="170" cy="380" r="8" fill="#b45309"/>
+                    <text x="170" y="383" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🍴</text>
+                    <text x="170" y="393" fill="#64748b" font-size="7" font-weight="semibold" text-anchor="middle">Nhà Hàng Cổ Tích</text>
                   </g>
                 </g>
               </svg>
@@ -449,13 +441,6 @@
               <span class="text-[9px] font-bold mt-0.5">Cá nhân</span>
             </div>
           </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
   </div>
 
   <script>
@@ -608,29 +593,37 @@
       }, 1000);
      }
 
+    // Map coordinates matching mock-data JSON exactly
+    const stationCoords = {
+      qr_station_01: { x: 120, y: 340 },
+      qr_station_02: { x: 450, y: 210 },
+      qr_station_03: { x: 300, y: 300 },
+      qr_station_04: { x: 580, y: 480 }
+    };
+
+    const attractionCoords = {
+      att_magic_castle: { x: 100, y: 290 },
+      att_swing_carousel: { x: 60, y: 420 },
+      att_castle_restaurant: { x: 170, y: 380 },
+      att_roller_coaster: { x: 410, y: 150 },
+      att_food_court_fast: { x: 520, y: 320 },
+      att_show_fire_dragon: { x: 260, y: 200 },
+      att_lakeside_gazebo: { x: 310, y: 330 },
+      att_show_water_music: { x: 340, y: 260 },
+      att_indoor_playground: { x: 200, y: 290 },
+      att_water_slide: { x: 630, y: 440 }
+    };
+
     // SVG Park Map Helper functions
     function drawRoute(fromStation, toTarget) {
       const navRoute = document.getElementById('nav-route');
       if (!navRoute) return;
       
-      const routes = {
-        // Station 1 (Cổng Cổ Tích - 70, 330)
-        'qr_station_01->att_show_fire_dragon': 'M 70 330 L 35 300',
-        'qr_station_01->att_magic_castle': 'M 70 330 L 105 300',
-        // Station 2 (Ngã Tư Phiêu Lưu - 150, 240)
-        'qr_station_02->att_roller_coaster': 'M 150 240 L 100 200',
-        'qr_station_02->att_swing_carousel': 'M 150 240 L 200 200',
-        'qr_station_02->att_food_court_fast': 'M 150 240 L 150 300',
-        // Station 3 (Bến Thuyền - 190, 100)
-        'qr_station_03->att_indoor_playground': 'M 190 100 L 135 80',
-        'qr_station_03->att_lakeside_gazebo': 'M 190 100 L 245 80',
-        'qr_station_03->att_show_water_music': 'M 190 100 L 190 140'
-      };
+      const start = stationCoords[fromStation];
+      const end = attractionCoords[toTarget];
       
-      const key = `${fromStation}->${toTarget}`;
-      const pathD = routes[key];
-      
-      if (pathD) {
+      if (start && end) {
+        const pathD = `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
         navRoute.setAttribute('d', pathD);
         navRoute.classList.remove('hidden');
         navRoute.classList.add('animated-route');
@@ -641,6 +634,13 @@
     }
 
     function updateActiveStationMarker() {
+      // Hide active route on new scan
+      const navRoute = document.getElementById('nav-route');
+      if (navRoute) {
+        navRoute.classList.add('hidden');
+        navRoute.classList.remove('animated-route');
+      }
+
       // Remove pulsing rings from all groups
       const stations = ['qr_station_01', 'qr_station_02', 'qr_station_03', 'qr_station_04'];
       stations.forEach(id => {
@@ -708,7 +708,7 @@
       if (!zoomGroup) return;
       
       // Constraint panning bounds based on zoom
-      const maxPan = 150 * zoomLevel;
+      const maxPan = 350 * zoomLevel;
       panX = Math.max(-maxPan, Math.min(maxPan, panX));
       panY = Math.max(-maxPan, Math.min(maxPan, panY));
       

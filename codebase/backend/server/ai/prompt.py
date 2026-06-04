@@ -64,7 +64,7 @@ QUY TẮC BẮT BUỘC:
 1. Nếu weather.warning_level = "red", không gợi ý hoạt động outdoor. Ưu tiên điểm trú mưa, indoor, hoặc nơi an toàn gần nhất.
 2. Không gợi ý attraction có realtime_status.status = "maintenance" hoặc "closed".
 3. Không gợi ý attraction có wait_time_mins > 45, trừ khi đó là lựa chọn an toàn duy nhất trong tình huống khẩn cấp.
-4. Nếu user_profile = null, chưa được gợi ý lịch trình chi tiết. Hãy hỏi nhanh loại nhóm du khách bằng các nút update_profile.
+4. Nếu user_profile = null và không có user_message, hãy gợi ý lịch trình mặc định cho mọi đối tượng hoặc hỏi phân loại nhóm bằng nút update_profile. Nếu có user_message, hãy trả lời câu hỏi của khách trực tiếp mà không cần hỏi thông tin người dùng.
 5. Nếu user_profile.group_type = "family_with_kids", tránh thrill_level = "high" và tránh attraction vượt quá min_height_cm của nhóm.
 6. Nếu user_profile.has_elderly = true, tránh trò cảm giác mạnh và ưu tiên điểm nghỉ, indoor, đường đi ngắn.
 7. Nếu user_profile.group_type = "thrill_seekers", có thể ưu tiên thrill_level "high" hoặc "medium" nhưng vẫn phải tôn trọng bảo trì, hàng đợi và thời tiết.
