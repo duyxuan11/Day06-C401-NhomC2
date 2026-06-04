@@ -55,7 +55,7 @@ Chọn một:
 | Path | Prototype phải thể hiện gì? |
 |---|---|
 | **Happy** | User quét mã QR tại trạm vật lý (Cổng Khu Cổ Tích lúc 10:00 sáng). Trợ lý WonderPath lập tức mở cuộc trò chuyện: *"Chào bạn! Bạn đang ở Khu Cổ Tích. Thời tiết lúc này nắng ấm (31°C). Moni gợi ý lịch trình 1-2 tiếng tới cho bạn: 1. Xem Show Rồng lửa lúc 10:15 (cách 50m) hoặc 2. Chơi Lâu đài huyền bí (chờ 10 phút)."* User bấm chọn option 1 -> Hiển thị sơ đồ chỉ đường ngắn và đếm ngược giờ show diễn. |
-| **Low-confidence** | Hệ thống không định vị chính xác vị trí hoặc mất kết nối thời tiết hiện tại. WonderPath sẽ hỏi lại nhanh bằng nút bấm: *"Chào bạn! Bạn vừa quét mã tại Trạm 3 nhưng định vị GPS đang không rõ ràng. Bạn đang đi cùng nhóm nào để mình gợi ý nhé?"* kèm các nút chọn nhanh: `[Gia đình có bé nhỏ]`, `[Nhóm bạn trẻ thích mạo hiểm]`, `[Đi thong thả nghỉ dưỡng]`. |
+| **Low-confidence** | Hệ thống chưa có thông tin phân loại nhóm du khách (user_profile: null). WonderPath sẽ hỏi lại nhanh bằng các nút bấm chọn nhanh khoảng tuổi (min/max age) và chiều cao tối thiểu (min_height_cm) của cả nhóm: `[Nhóm có bé nhỏ (Dưới 1m) 👶]`, `[Nhóm bạn trẻ thích cảm giác mạnh 🎢]`, `[Gia đình có người già & trẻ em 🍃]`. |
 | **Failure** | AI gợi ý trò chơi "Tàu lượn siêu tốc" nhưng trò này vừa vào trạng thái bảo trì đột xuất cách đây 2 phút hoặc hàng đợi đột ngột tăng lên 60 phút. Khi user đi đến nơi thấy biển báo bảo trì, user mở chatbox thấy thông báo cập nhật: *"Rất tiếc, trò Tàu lượn vừa tạm dừng bảo trì. Bạn có muốn đổi sang trò Đu quay dây văng (chờ 5 phút, cách 100m) không?"* kèm nút `[Đồng ý cập nhật]` và `[Tìm trò mát mẻ khác]`. |
 | **Correction** | Khi user bấm nút `[Tìm trò mát mẻ khác]` hoặc phản hồi *"Trò này không phù hợp cho trẻ em dưới 1m"*, WonderPath lập tức thay đổi gợi ý, ghi nhận phản hồi vào profile tạm thời của phiên chơi hiện tại để không gợi ý các trò cảm giác mạnh cho nhóm này trong ngày hôm đó nữa. |
 
@@ -75,7 +75,8 @@ Owner kiểm thử path này là Tạ Duy Xuân.
 |---|---|---|
 | **Nguyễn Huy Bảo** - 2A202600997 | **Đầu việc 1**: Thiết kế Kịch bản & Dữ liệu giả lập | Dữ liệu giả lập các trò chơi, vị trí trạm QR, và trạng thái xếp hàng/thời tiết trong repo. |
 | **Nguyễn Văn Đoan** - 2A202600795 | **Đầu việc 2**: Lập trình Giao diện di động | Code Frontend Web/Zalo Mini App hiển thị Chatbot và Toast thông báo có nút [Undo]. |
-| **Lê Duy Hùng** - 2A202600718 <br> **Trần Hoàng Đạt** 2A202600807 | **Đầu việc 3**: Thiết lập Prompt & AI Logic  & kiểm thử kịch bản & script tính cost LLM  | System Prompt cho Gemini và định nghĩa cấu trúc JSON đầu vào/đầu ra trong SPEC. |
-| **Phạm Ngọc Vinh** - 2A202600563 | **Đầu việc 4**: Xây dựng Backend & Kết nối API| API Server kết nối Gemini API và Mock API trạng thái công viên. |
+| **Lê Duy Hùng** - 2A202600718 | **Đầu việc 3a**: Thiết lập Prompt & AI Logic | System Prompt cho LLM và định nghĩa cấu trúc JSON Schema đầu vào/đầu ra. |
+| **Trần Hoàng Đạt** - 2A202600807 | **Đầu việc 3b**: Kiểm thử Prompt & Giám sát hiệu năng | Kịch bản kiểm thử test scenarios, script tính toán token và đo lường độ trễ LLM. |
+| **Phạm Ngọc Vinh** - 2A202600563 | **Đầu việc 4**: Xây dựng Backend & Kết nối API | API Server kết nối LLM API và Mock API trạng thái công viên. |
 | **Tạ Duy Xuân** - 2A202600970 | **Đầu việc 5**: Kiểm thử kịch bản lỗi & Chuẩn bị Demo | Video demo 3 phút + Script thuyết trình + Slide nhóm + Kịch bản kiểm thử Failure Path. |
 

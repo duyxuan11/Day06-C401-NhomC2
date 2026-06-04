@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026-06-04T11:22:11.563501",
+  "model_name": "gemini-1.5-flash",
+  "dry_run": true,
+  "summary": {
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "accuracy": 1.0
+  },
+  "details": [
+    {
+      "id": "scenario_01_happy_path",
+      "name": "Kịch bản 1: Happy Path - Gia đình có bé nhỏ quét QR tại Cổng Khu Cổ Tích lúc 10:00 sáng",
+      "passed": true,
+      "mismatch_reason": "Dry run (Bypass API Call)",
+      "actual": null
+    },
+    {
+      "id": "scenario_02_low_confidence",
+      "name": "Kịch bản 2: Low-confidence Path - Quét QR nhưng thiếu thông tin loại nhóm (chưa chọn profile)",
+      "passed": true,
+      "mismatch_reason": "Dry run (Bypass API Call)",
+      "actual": null
+    },
+    {
+      "id": "scenario_03_failure_maintenance",
+      "name": "Kịch bản 3: Failure Path (Bảo trì/Quá tải) - Nhóm bạn trẻ quét QR tại Ngã Tư Phiêu Lưu muốn chơi Tàu lượn siêu tốc nhưng trò này đột ngột bảo trì",
+      "passed": true,
+      "mismatch_reason": "Dry run (Bypass API Call)",
+      "actual": null
+    },
+    {
+      "id": "scenario_04_weather_emergency",
+      "name": "Kịch bản 4: Correction/Emergency Path - Đang quét QR thì trời bất ngờ đổ dông bão (Stormy)",
+      "passed": true,
+      "mismatch_reason": "Dry run (Bypass API Call)",
+      "actual": null
+    },
+    {
+      "id": "scenario_05_qr_scan_with_user_input",
+      "name": "Kịch bản 5: Quét QR tại Công Viên Nước -> Nhập nhóm đi -> Lấy địa điểm, thời gian -> Lấy thời tiết -> Trả về gợi ý",
+      "passed": true,
+      "mismatch_reason": "Dry run (Bypass API Call)",
+      "actual": null
+    }
+  ]
+}

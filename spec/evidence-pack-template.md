@@ -10,6 +10,7 @@ Nộp kèm thin SPEC cuối Day 05.
 - Nguyễn Văn Đoan — 2A202600795
 - Nguyễn Huy Bảo — 2A202600997
 - Lê Duy Hùng — 2A202600718
+- Trần Hoàng Đạt — 2A202600807
 - Phạm Ngọc Vinh — 2A202600563
 - Tạ Duy Xuân — 2A202600970
 **Track:** Travel & Hospitality (Khu vui chơi phức hợp / Theme Parks)  

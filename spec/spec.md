@@ -59,7 +59,7 @@ Các bằng chứng này phản ánh lỗi vận hành vật lý hoặc hệ th�
 > **Ý kiến đúc kết (Insight)**: Du khách khi đi chơi muốn thư giãn tuyệt đối, họ cực kỳ lười tự tay nghiên cứu các công cụ lập kế hoạch phức tạp hoặc tự đọc mô tả trò chơi sơ sài. Đồng thời, mọi kế hoạch lên sẵn cho cả ngày (static plan) rất dễ bị phá vỡ bởi các yếu tố thực tế (thời tiết thay đổi đột ngột, trò chơi bảo trì, hàng đợi quá tải). Họ cần một trợ lý hỗ trợ ra quyết định tức thời, cực kỳ tối giản (Zero-UI/Zero-Input) để có ngay gợi ý lịch trình ngắn hạn (1-2 tiếng) tối ưu phù hợp với vị trí và nhóm đi cùng.
 
 > [!TIP]
-> **Cơ hội sản phẩm (Opportunity)**: Sử dụng AI (Gemini API) kết hợp quét mã QR vật lý tại chỗ để tự động nhận dạng vị trí và thời gian (Zero-Input). AI sẽ phản hồi bằng một hội thoại siêu ngắn (Conversational UI) cung cấp thông tin trò chơi được cá nhân hoá và gợi ý lịch trình ngắn hạn 1-2 tiếng tối ưu kèm các nút bấm phản hồi nhanh, giúp giảm tối đa ma sát tương tác của người dùng.
+> **Cơ hội sản phẩm (Opportunity)**: Sử dụng AI (LLM API) kết hợp quét mã QR vật lý tại chỗ để tự động nhận dạng vị trí và thời gian (Zero-Input). AI sẽ phản hồi bằng một hội thoại siêu ngắn (Conversational UI) cung cấp thông tin trò chơi được cá nhân hoá và gợi ý lịch trình ngắn hạn 1-2 tiếng tối ưu kèm các nút bấm phản hồi nhanh, giúp giảm tối đa ma sát tương tác của người dùng.
 
 ### 1.5. Sự thay đổi của SPEC sau khi có Bằng chứng
 
@@ -73,7 +73,7 @@ Các bằng chứng này phản ánh lỗi vận hành vật lý hoặc hệ th�
 
 > [!IMPORTANT]
 > **Lát cắt Prototype (Build Slice)**:
-> Cho du khách tại công viên phức hợp đang muốn tìm địa điểm vui chơi tiếp theo trong 1-2 tiếng tới, prototype sẽ dùng AI (Gemini API) để phân tích ngữ cảnh (vị trí quét QR, thời gian hiện tại, thời tiết, tình trạng hàng đợi thực tế) và tạo ra một lịch trình vi mô ngắn gọn (Micro-Itinerary), tạo ra cuộc trò chuyện siêu ngắn (Conversational UI) chào đón và đề xuất 2-3 lựa chọn phản hồi nhanh bằng nút bấm để sinh lịch trình ngắn hạn trong 1-2 tiếng tiếp theo, và xử lý failure mode (AI gợi ý trò chơi đang bảo trì/hàng đợi quá tải hoặc trời mưa trò chơi ngoài trời dừng hoạt động) bằng việc tự động truy xuất API trạng thái công viên thời gian thực để cập nhật phương án thay thế ngay trong chatbox và hiển thị nút `[Đổi phương án khác]`.
+> Cho du khách tại công viên phức hợp đang muốn tìm địa điểm vui chơi tiếp theo trong 1-2 tiếng tới, prototype sẽ dùng AI (LLM API) để phân tích ngữ cảnh (vị trí quét QR, thời gian hiện tại, thời tiết, tình trạng hàng đợi thực tế) và tạo ra một lịch trình vi mô ngắn gọn (Micro-Itinerary), tạo ra cuộc trò chuyện siêu ngắn (Conversational UI) chào đón và đề xuất 2-3 lựa chọn phản hồi nhanh bằng nút bấm để sinh lịch trình ngắn hạn trong 1-2 tiếng tiếp theo, và xử lý failure mode (AI gợi ý trò chơi đang bảo trì/hàng đợi quá tải hoặc trời mưa trò chơi ngoài trời dừng hoạt động) bằng việc tự động truy xuất API trạng thái công viên thời gian thực để cập nhật phương án thay thế ngay trong chatbox và hiển thị nút `[Đổi phương án khác]`.
 
 ---
 
@@ -83,7 +83,7 @@ Các bằng chứng này phản ánh lỗi vận hành vật lý hoặc hệ th�
 |---|---|
 | **Value (Giá trị)** | **Đối tượng**: Du khách tham quan công viên phức hợp (phụ huynh dắt trẻ nhỏ/người già, nhóm bạn trẻ).<br>**Nỗi đau**: Di chuyển lòng vòng mệt mỏi dưới nắng nóng, xếp hàng vô ích vì không biết trò chơi đang bảo trì/quá tải hoặc thiếu thông tin phù hợp.<br>**AI Giải quyết**: Đưa ra lịch trình vi mô (1-2 tiếng) tức thời, cá nhân hóa dựa trên thời tiết, hàng đợi, vị trí quét QR mà cách lập lịch thủ công truyền thống không thể tự động hóa linh hoạt được. |
 | **Trust (Niềm tin)** | **Khi AI trả lời sai** (Ví dụ gợi ý trò chơi ngoài trời lúc trời mưa dông hoặc trò chơi vừa bảo trì mà hệ thống chưa cập nhật kịp):<br>- Người dùng dễ dàng nhận thấy qua biển báo thực tế.<br>- Khắc phục trên UI: Luôn hiển thị nút `[Đổi phương án khác]` để người dùng yêu cầu AI tái định tuyến ngay lập tức.<br>- Cập nhật trạng thái khẩn cấp: AI hiển thị cảnh báo đỏ trên thẻ hội thoại và chủ động chuyển hướng sang các trò chơi trong nhà mát mẻ (KidZone) hoặc chòi trú ẩn gần nhất kèm nút `[🚨 Chỉ đường trú mưa]`. |
-| **Feasibility (Tính khả thi)** | **Chi phí**: Gọi Gemini API dạng Structured JSON đầu ra ngắn gọn (dưới 100 tokens phản hồi), chi phí vận hành cực thấp.<br>**Độ trễ (Latency)**: Kiểm soát dưới 1.5 - 2 giây để đảm bảo trải nghiệm chat mượt mà trên thiết bị di động.<br>**Dữ liệu đầu vào**: Danh sách trò chơi, danh sách trạm quét QR, file trạng thái vận hành thời gian thực (được giả lập tĩnh/API).<br>**Rủi ro lớn nhất**: Gemini trả về sai cấu trúc JSON hoặc bị mất kết nối API.<br>**Ngưỡng dừng**: Nếu API lỗi liên tục, hệ thống fallback về giao diện gợi ý tĩnh cố định dựa theo Station ID hiện tại. |
+| **Feasibility (Tính khả thi)** | **Chi phí**: Gọi LLM API (Gemini, OpenAI, hoặc Claude) dạng Structured JSON đầu ra ngắn gọn (dưới 100 tokens phản hồi). Cần giám sát và tính toán token/chi phí giữa các nhà cung cấp để tối ưu hóa ngân sách.<br>**Độ trễ (Latency)**: Kiểm soát dưới 1.5 - 2 giây để đảm bảo trải nghiệm chat mượt mà trên thiết bị di động.<br>**Dữ liệu đầu vào**: Danh sách trò chơi, danh sách trạm quét QR, file trạng thái vận hành thời gian thực (được giả lập tĩnh/API).<br>**Rủi ro lớn nhất**: LLM trả về sai cấu trúc JSON hoặc bị mất kết nối API.<br>**Ngưỡng dừng**: Nếu API lỗi liên tục, hệ thống fallback về giao diện gợi ý tĩnh cố định dựa theo Station ID hiện tại. |
 | **Tín hiệu học (Learning Signals)** | Khi người dùng tương tác bấm các nút phản hồi (Ví dụ: `[Gia đình có trẻ nhỏ 👨‍👩‍👧‍👦]`, `[Đổi phương án khác]`), thông tin này được lưu lại trong session profile của phiên quét QR hiện tại. Hệ thống sẽ tích hợp dữ liệu này để làm tập test-cases (evaluation scenarios) và tinh chỉnh prompt giúp gợi ý cá nhân hóa hơn cho các trạm quét tiếp theo trong ngày. |
 
 ---
@@ -129,7 +129,7 @@ graph TD
 | Đường đi (Path) | Tình huống kích hoạt | Giao diện hiển thị và xử lý của Prototype | Hành động nút bấm tương ứng |
 |---|---|---|---|
 | **Happy Path (Đường thuận)** | Khách là gia đình có bé nhỏ quét QR tại **Trạm 1 (Cổng Khu Cổ Tích)** lúc 10:00 sáng. Mọi trò chơi hoạt động bình thường, thời tiết nắng ấm (31°C). | Đưa ra câu chào thân thiện chào mừng gia đình. Gợi ý 2 hoạt động tối ưu: Xem **Show Rồng Lửa** (sắp diễn ra lúc 10:15, cách 350m) và chơi **Lâu Đài Huyền Bí** (trò chơi trong nhà mát mẻ, chờ 15 phút, phù hợp bé dưới 1m). | - `[Xem Show Rồng Lửa (10:15)]` (navigate)<br>- `[Chơi Lâu Đài Huyền Bí]` (navigate)<br>- `[Tìm nhà hàng ăn trưa gần đây]` (suggest_dining) |
-| **Low-confidence Path (Khi AI chưa chắc chắn)** | Khách quét QR tại trạm nhưng hệ thống chưa có thông tin phân loại nhóm du khách (user_profile: null). | AI không tự tiện gợi ý lịch trình chi tiết. Chatbot sẽ chào và hỏi nhanh đối tượng đi cùng để cập nhật profile tạm thời cho phiên quét. | - `[Gia đình có trẻ nhỏ 👨‍👩‍👧‍👦]` (update_profile)<br>- `[Nhóm bạn trẻ thích cảm giác mạnh 🎢]` (update_profile)<br>- `[Đi thong thả nghỉ dưỡng 🍃]` (update_profile) |
+| **Low-confidence Path (Khi AI chưa chắc chắn)** | Khách quét QR tại trạm nhưng hệ thống chưa có thông tin phân loại nhóm du khách (user_profile: null). | AI không tự tiện gợi ý lịch trình chi tiết. Chatbot sẽ chào và hỏi nhanh đối tượng đi cùng bằng các nút chọn nhanh để cập nhật thông tin độ tuổi (min/max age) và chiều cao tối thiểu (min_height_cm) cho phiên quét. | - `[Nhóm có bé nhỏ (Dưới 1m) 👶]` (update_profile)<br>- `[Nhóm bạn trẻ thích cảm giác mạnh 🎢]` (update_profile)<br>- `[Gia đình có người già & trẻ em 🍃]` (update_profile) |
 | **Failure Path (Khi có lỗi vận hành thực tế)** | Nhóm bạn trẻ quét QR tại **Trạm 2 (Ngã Tư Phiêu Lưu)** muốn chơi Tàu lượn siêu tốc nhưng trò này đột ngột bảo trì kỹ thuật (maintenance). | AI tự động phát hiện trạng thái bảo trì trong `realtime_status`. Chủ động thay thế bằng gợi ý trò **Đu Quay Dây Văng** (cách 600m, chờ 10 phút, cảm giác mạnh vừa) hoặc ăn uống nạp năng lượng tại **Khu Ẩm Thực Nhanh Express** ngay cạnh. | - `[Chỉ đường tới Đu Quay Dây Văng]` (navigate)<br>- `[Ghé Khu Ẩm Thực Nhanh Express]` (navigate)<br>- `[Đổi phương án khác]` (request_alternative) |
 | **Correction Path (Khi người dùng sửa hoặc biến động thời tiết)** | Khách quét QR tại **Trạm 3 (Bến Thuyền Hồ Trung Tâm)** lúc 15:00, thời tiết đột ngột đổ dông bão cảnh báo đỏ (warning_level: red). | AI lập tức kích hoạt chế độ khẩn cấp: Ẩn toàn bộ trò chơi ngoài trời, hiển thị cảnh báo đỏ và chỉ dẫn nhanh tới nơi trú mưa an toàn gần nhất: **Khu Vui Chơi Trong Nhà KidZone** (cách 250m) hoặc **Chòi Nghỉ Mát Ven Hồ** (cách 30m). | - `[🚨 Chỉ đường trú mưa KidZone]` (navigate)<br>- `[Chỉ đường tới Chòi Nghỉ Ven Hồ]` (navigate) |
 
@@ -150,9 +150,15 @@ Nhóm xác định và thiết kế giải pháp xử lý cho 3 kiểu lỗi ngu
 - *Cách xử lý*: Quy định quy tắc lọc nghiêm ngặt trong System Prompt. AI phải đối chiếu ID trò chơi với `realtime_status`. Nếu trạng thái là "maintenance" hoặc wait_time_mins > 45 phút, loại bỏ ngay khỏi danh sách đề xuất và tìm phương án thay thế có hàng đợi dưới 20 phút.
 
 ### 6.3. Lỗi cấu trúc phản hồi của AI (AI Output Malfunction)
-- *Xuất hiện khi*: Gemini API trả về văn bản tự do thay vì JSON hoặc trả về thiếu các trường bắt buộc gây lỗi crash giao diện Frontend.
-- *Hậu quả*: Người dùng nhìn thấy màn hình trắng hoặc lỗi code, làm gián đoạn hoàn toàn trải nghiệm di chuyển tại công viên.
-- *Cách xử lý*: Sử dụng cấu hình `response_schema` (Structured Outputs) của SDK Gemini để đảm bảo định dạng trả về luôn tuân thủ cấu trúc Pydantic `WonderPathResponse`. Frontend thiết kế thêm cơ chế fallback: Nếu API bị timeout hoặc lỗi parse JSON, tự động render 3 nút bấm tĩnh dẫn đường mặc định dựa trên trạm QR hiện tại mà không gọi AI.
+- *Xuất hiện khi*: LLM API (Gemini, OpenAI, Claude...) trả về văn bản tự do thay vì JSON hoặc thiếu các trường bắt buộc gây crash giao diện Frontend.
+- *Hậu quả*: Người dùng nhìn thấy màn hình lỗi, làm gián đoạn trải nghiệm di chuyển tại công viên.
+- *Cách xử lý*: 
+  - Đảm bảo tính tương thích đa nền tảng bằng cách thiết kế API Gateway hoặc Adapter Pattern hỗ trợ nhiều loại LLM:
+    - **Gemini**: Sử dụng `response_schema` với định dạng Pydantic `WonderPathResponse`.
+    - **OpenAI (GPT-4o/GPT-4o-mini)**: Sử dụng Structured Outputs thông qua tham số `response_format` định nghĩa JSON Schema.
+    - **Anthropic Claude**: Sử dụng tính năng Tool Use (Function Calling) ép buộc mô hình trả về đối số JSON hoặc hướng dẫn định dạng JSON nghiêm ngặt trong system prompt.
+    - **Local LLMs (Ollama/Llama3)**: Sử dụng tham số `format="json"` kết hợp phân tích cú pháp nghiêm ngặt (pydantic parser).
+  - Giao diện Frontend thiết kế cơ chế fallback: Nếu API của mô hình chính gặp lỗi hoặc bị timeout, hệ thống sẽ tự động thử lại với mô hình phụ (fallback LLM) hoặc render các nút bấm tĩnh mặc định dựa trên trạm QR hiện tại mà không gọi AI.
 
 ---
 
@@ -171,11 +177,12 @@ Hệ thống truy xuất dữ liệu từ các file mock data tĩnh trong thư m
 - [weather.json](file:///c:/Users/Administrator/Day06-C401-NhomC2/codebase/mock-data/weather.json): Chỉ số thời tiết hiện tại.
 
 ### 7.3. Kịch bản kiểm thử (Test Scenarios)
-Tệp [test_scenarios.json](file:///c:/Users/Administrator/Day06-C401-NhomC2/codebase/mock-data/test_scenarios.json) định nghĩa 4 test case cụ thể ứng với 4 đường đi của trải nghiệm:
+Tệp [test_scenarios.json](file:///c:/Users/Administrator/Day06-C401-NhomC2/codebase/mock-data/test_scenarios.json) định nghĩa 5 test case cụ thể ứng với các luồng trải nghiệm:
 1. `scenario_01_happy_path`: Kiểm thử gợi ý tối ưu cho gia đình có bé nhỏ tại Khu Cổ Tích lúc 10:00 sáng.
 2. `scenario_02_low_confidence`: Kiểm thử khả năng hỏi lại phân loại nhóm du khách khi quét QR thiếu profile.
 3. `scenario_03_failure_maintenance`: Kiểm thử tự động chuyển hướng thay thế khi trò chơi Tàu lượn siêu tốc bảo trì.
 4. `scenario_04_weather_emergency`: Kiểm thử cảnh báo khẩn cấp đỏ và chỉ đường trú ẩn khi trời đổ dông stormy.
+5. `scenario_05_qr_scan_with_user_input`: Kiểm thử luồng quét QR -> người dùng chọn/cập nhật nhóm đi -> lấy dữ liệu thời gian (14:30), địa điểm (qr_station_04), thời tiết (nắng nóng 35°C) -> trả về gợi ý hoạt động giải nhiệt phù hợp.
 
 ### 7.4. Hướng dẫn chạy Đánh giá (Verification Commands)
 Để chạy kiểm tra, bạn cần di chuyển vào thư mục `codebase` hoặc truyền đúng đường dẫn tới các tệp mock data.
@@ -208,9 +215,9 @@ Mỗi thành viên trong nhóm C2 được phân bổ các vai trò rõ ràng đ
 
 | Thành viên | Nhiệm vụ đảm nhiệm | Bằng chứng đầu ra trong Repo |
 |---|---|---|
-| **Nguyễn Huy Bảo**<br>(2A202600997) | **Kịch bản & Dữ liệu giả lập**: Quản lý và cập nhật cấu trúc dữ liệu mock-data, xây dựng các kịch bản dữ liệu hàng đợi và thời tiết khó để kiểm thử hệ thống. | Các file JSON mock-data hoàn chỉnh trong thư mục [mock-data](file:///c:/Users/Administrator/Day06-C401-NhomC2/codebase/mock-data). |
-| **Nguyễn Văn Đoan**<br>(2A202600795) | **Lập trình Giao diện di động**: Thiết kế giao diện Web App/Zalo Mini App hiển thị thẻ hội thoại ngắn (Chat Card UI) kèm danh sách nút bấm hành động linh hoạt, xử lý nút [Undo/Quay lại] và [Đổi phương án khác]. | Mã nguồn Frontend trong thư mục `codebase/frontend` (hoặc link deploy). |
-| **Lê Duy Hùng**<br>(2A202600718) | **Prompt Engineering & AI Logic**: Thiết lập System Prompt, tinh chỉnh tham số Gemini API, viết logic đóng gói Context đầu vào và kiểm soát cấu trúc JSON đầu ra thông qua Response Schema. | Mã nguồn cấu hình Prompt và Schema định nghĩa trong file tích hợp. |
-| **Trần Hoàng Đạt** <br>(2A202600807) | **Prompt testting & AI performance monitoring**: Kiểm thử prompt, tinh chỉnh tham số Gemini API, viết logic tính token, chỉ số thời gian,...| Mã nguồn cấu hình kiểm thử test senarios, tính token và lưu kết quả log. |
-| **Phạm Ngọc Vinh**<br>(2A202600563) | **Backend & Tích hợp API**: Xây dựng máy chủ API trung gian kết nối giữa ứng dụng di động, cơ sở dữ liệu mock-data thời gian thực và Gemini API. | Mã nguồn Backend API Server trong thư mục `codebase/backend`. |
-| **Tạ Duy Xuân**<br>(2A202600970) | **Đảm bảo chất lượng & Demo**: Quay video demo sản phẩm dài 3 phút, soạn kịch bản thuyết trình bảo vệ các quyết định sản phẩm trước lớp. | File slide thuyết trình, video demo và tệp báo cáo chạy đánh giá trong thư mục `codebase/runs`. |
+| **Nguyễn Huy Bảo**<br>(2A202600997) | **Kịch bản & Dữ liệu giả lập**: Thiết kế cấu trúc dữ liệu, cập nhật và quản lý các file mock data tĩnh, thiết lập các kịch bản khó (hàng đợi quá tải, bão thời tiết) để phục vụ kiểm thử. | Các file JSON mock data hoàn chỉnh tại thư mục [mock-data](file:///c:/Users/Administrator/Day06-C401-NhomC2/codebase/mock-data). |
+| **Nguyễn Văn Đoan**<br>(2A202600795) | **Lập trình Giao diện di động**: Phát triển UI/UX cho Web App / Zalo Mini App hiển thị thẻ hội thoại ngắn (Chat Card UI) cùng các nút phản hồi động, xử lý các thao tác hoàn tác [Quay lại/Undo] và yêu cầu thay đổi gợi ý [Đổi phương án khác]. | Mã nguồn Frontend tại thư mục `codebase/frontend` (hoặc đường dẫn deploy). |
+| **Lê Duy Hùng**<br>(2A202600718) | **Prompt Engineering & AI Logic**: Thiết lập System Prompt tối ưu cho LLM, tinh chỉnh các tham số sinh văn bản (temperature, top_p) và thiết lập cấu trúc JSON Schema đầu ra nghiêm ngặt để tích hợp API. | Mã nguồn cấu hình Prompt và Response Schema định nghĩa trong file tích hợp. |
+| **Trần Hoàng Đạt**<br>(2A202600807) | **Prompt Testing & Performance Monitoring**: Thiết lập kịch bản kiểm thử tự động, đo lường độ trễ (latency), theo dõi số lượng token tiêu thụ và xây dựng mã nguồn tính toán chi phí sử dụng API của các mô hình LLM. | Kịch bản kiểm thử test scenarios, mã nguồn tính toán token/chi phí và lưu trữ nhật ký (log) kết quả. |
+| **Phạm Ngọc Vinh**<br>(2A202600563) | **Backend & Tích hợp API**: Xây dựng máy chủ API trung gian kết nối ứng dụng di động với cơ sở dữ liệu và tích hợp các LLM API (Gemini, OpenAI, Claude...), thiết kế cơ chế fallback khi API lỗi. | Mã nguồn Backend API Server tại thư mục `codebase/backend`. |
+| **Tạ Duy Xuân**<br>(2A202600970) | **Đảm bảo chất lượng & Demo**: Thực hiện kiểm thử thủ công, quay video demo sản phẩm (3 phút), soạn kịch bản thuyết trình và slide thuyết trình bảo vệ các quyết định sản phẩm trước hội đồng. | Slide thuyết trình, video demo sản phẩm và tệp báo cáo chạy đánh giá trong thư mục `codebase/runs`. |
