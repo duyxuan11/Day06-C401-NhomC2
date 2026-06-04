@@ -171,11 +171,12 @@ Hệ thống truy xuất dữ liệu từ các file mock data tĩnh trong thư m
 - [weather.json](file:///c:/Users/Administrator/Day06-C401-NhomC2/codebase/mock-data/weather.json): Chỉ số thời tiết hiện tại.
 
 ### 7.3. Kịch bản kiểm thử (Test Scenarios)
-Tệp [test_scenarios.json](file:///c:/Users/Administrator/Day06-C401-NhomC2/codebase/mock-data/test_scenarios.json) định nghĩa 4 test case cụ thể ứng với 4 đường đi của trải nghiệm:
+Tệp [test_scenarios.json](file:///c:/Users/Administrator/Day06-C401-NhomC2/codebase/mock-data/test_scenarios.json) định nghĩa 5 test case cụ thể ứng với các đường đi của trải nghiệm:
 1. `scenario_01_happy_path`: Kiểm thử gợi ý tối ưu cho gia đình có bé nhỏ tại Khu Cổ Tích lúc 10:00 sáng.
 2. `scenario_02_low_confidence`: Kiểm thử khả năng hỏi lại phân loại nhóm du khách khi quét QR thiếu profile.
 3. `scenario_03_failure_maintenance`: Kiểm thử tự động chuyển hướng thay thế khi trò chơi Tàu lượn siêu tốc bảo trì.
 4. `scenario_04_weather_emergency`: Kiểm thử cảnh báo khẩn cấp đỏ và chỉ đường trú ẩn khi trời đổ dông stormy.
+5. `scenario_05_queue_overload`: Kiểm thử tự động chuyển hướng thay thế khi trò chơi Đường Trượt Nước quá tải (>45 phút) trong thời tiết nắng gắt.
 
 ### 7.4. Hướng dẫn chạy Đánh giá (Verification Commands)
 Để chạy kiểm tra, bạn cần di chuyển vào thư mục `codebase` hoặc truyền đúng đường dẫn tới các tệp mock data.
