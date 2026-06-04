@@ -1,0 +1,172 @@
+[
+  {
+    "id": "att_roller_coaster",
+    "name": "Tàu Lượn Siêu Tốc (Roller Coaster)",
+    "zone": "Khu Phiêu Lưu (Adventure Land)",
+    "category": "ride",
+    "indoor_outdoor": "outdoor",
+    "thrill_level": "high",
+    "constraints": {
+      "min_height_cm": 140,
+      "max_height_cm": 195,
+      "min_age": 12,
+      "health_warnings": ["Bệnh tim mạch", "Huyết áp cao", "Phụ nữ mang thai", "Sợ độ cao"]
+    },
+    "description": "Tàu lượn siêu tốc tốc độ cao với các vòng xoắn 360 độ đầy phấn khích. Trải nghiệm cảm giác mạnh cực đỉnh cho các bạn trẻ ưa thích mạo hiểm.",
+    "duration_mins": 3,
+    "average_wait_time_mins": 40
+  },
+  {
+    "id": "att_swing_carousel",
+    "name": "Đu Quay Dây Văng (Swing Carousel)",
+    "zone": "Khu Cổ Tích (Fairy Tale Land)",
+    "category": "ride",
+    "indoor_outdoor": "outdoor",
+    "thrill_level": "medium",
+    "constraints": {
+      "min_height_cm": 120,
+      "max_height_cm": 200,
+      "min_age": 8,
+      "health_warnings": ["Tiền đình", "Sợ độ cao"]
+    },
+    "description": "Đu quay dây văng đưa bạn bay lượn trên không trung ở độ cao 10m, ngắm nhìn toàn cảnh khu cổ tích lung linh màu sắc.",
+    "duration_mins": 4,
+    "average_wait_time_mins": 15
+  },
+  {
+    "id": "att_magic_castle",
+    "name": "Lâu Đài Huyền Bí (Mysterious Castle)",
+    "zone": "Khu Cổ Tích (Fairy Tale Land)",
+    "category": "ride",
+    "indoor_outdoor": "indoor",
+    "thrill_level": "low",
+    "constraints": {
+      "min_height_cm": 90,
+      "max_height_cm": null,
+      "min_age": 3,
+      "health_warnings": []
+    },
+    "description": "Hành trình thám hiểm lâu đài cổ tích bằng xe ray tự động, tái hiện các câu chuyện thần thoại bằng hiệu ứng ánh sáng 3D đẹp mắt. Phù hợp cho gia đình có trẻ nhỏ.",
+    "duration_mins": 8,
+    "average_wait_time_mins": 20
+  },
+  {
+    "id": "att_water_slide",
+    "name": "Đường Trượt Nước Lốc Xoáy (Tornado Water Slide)",
+    "zone": "Khu Công Viên Nước (Water Park)",
+    "category": "ride",
+    "indoor_outdoor": "outdoor",
+    "thrill_level": "high",
+    "constraints": {
+      "min_height_cm": 130,
+      "max_height_cm": null,
+      "min_age": 10,
+      "health_warnings": ["Bệnh tim mạch"]
+    },
+    "description": "Trượt nước qua ống phễu khổng lồ lốc xoáy đầy kích thích. Bắt buộc mặc đồ bơi và đi nhóm từ 2-4 người.",
+    "duration_mins": 2,
+    "average_wait_time_mins": 35
+  },
+  {
+    "id": "att_show_fire_dragon",
+    "name": "Show Diễn Rồng Lửa (Fire Dragon Legend Show)",
+    "zone": "Khu Trung Tâm (Central Plaza)",
+    "category": "show",
+    "indoor_outdoor": "outdoor",
+    "thrill_level": "low",
+    "constraints": {
+      "min_height_cm": null,
+      "max_height_cm": null,
+      "min_age": 0,
+      "health_warnings": []
+    },
+    "description": "Show diễn nghệ thuật ngoài trời kết hợp lửa, nước và các diễn viên múa chuyên nghiệp kể về truyền thuyết Rồng lửa bảo vệ vương quốc cổ tích. Diễn ra lúc 10:15 và 15:30.",
+    "duration_mins": 20,
+    "average_wait_time_mins": 0
+  },
+  {
+    "id": "att_show_water_music",
+    "name": "Show Nhạc Nước Sắc Màu (Chroma Water Show)",
+    "zone": "Hồ Trung Tâm (Central Lake)",
+    "category": "show",
+    "indoor_outdoor": "outdoor",
+    "thrill_level": "low",
+    "constraints": {
+      "min_height_cm": null,
+      "max_height_cm": null,
+      "min_age": 0,
+      "health_warnings": []
+    },
+    "description": "Sự kết hợp hoàn mỹ giữa các cột nước phun cao đến 50m, hệ thống đèn laser đa sắc và âm nhạc giao hưởng hùng tráng. Show diễn kết thúc ngày hoành tráng diễn ra lúc 19:00 hàng ngày.",
+    "duration_mins": 25,
+    "average_wait_time_mins": 0
+  },
+  {
+    "id": "att_castle_restaurant",
+    "name": "Nhà Hàng Lâu Đài Cổ Tích (Royal Castle Restaurant)",
+    "zone": "Khu Cổ Tích (Fairy Tale Land)",
+    "category": "dining",
+    "indoor_outdoor": "indoor",
+    "thrill_level": "low",
+    "constraints": {
+      "min_height_cm": null,
+      "max_height_cm": null,
+      "min_age": 0,
+      "health_warnings": []
+    },
+    "description": "Nhà hàng buffet và gọi món cao cấp phong cách hoàng gia Pháp, phục vụ các món Âu-Á và có điều hòa mát mẻ, khu vực ngồi nghỉ rộng rãi thích hợp cho gia đình đông người nghỉ ngơi buổi trưa.",
+    "duration_mins": 45,
+    "average_wait_time_mins": 10
+  },
+  {
+    "id": "att_food_court_fast",
+    "name": "Khu Ẩm Thực Nhanh Express (Speedy Food Court)",
+    "zone": "Khu Phiêu Lưu (Adventure Land)",
+    "category": "dining",
+    "indoor_outdoor": "outdoor",
+    "thrill_level": "low",
+    "constraints": {
+      "min_height_cm": null,
+      "max_height_cm": null,
+      "min_age": 0,
+      "health_warnings": []
+    },
+    "description": "Quầy phục vụ gà rán, khoai tây chiên, pizza và nước ngọt nhanh chóng, có mái che ngoài trời và ghế ngồi di động.",
+    "duration_mins": 20,
+    "average_wait_time_mins": 5
+  },
+  {
+    "id": "att_indoor_playground",
+    "name": "Khu Vui Chơi Trong Nhà KidZone (Indoor Playland)",
+    "zone": "Khu Trung Tâm (Central Plaza)",
+    "category": "rest_area",
+    "indoor_outdoor": "indoor",
+    "thrill_level": "low",
+    "constraints": {
+      "min_height_cm": null,
+      "max_height_cm": 140,
+      "min_age": 2,
+      "health_warnings": []
+    },
+    "description": "Khu vui chơi trẻ em trong nhà mát lạnh với nhà banh, cầu trượt mềm, góc tô tượng và ghế massage cho phụ huynh nghỉ ngơi. Điểm trú mưa lý tưởng cho gia đình có bé nhỏ.",
+    "duration_mins": 60,
+    "average_wait_time_mins": 0
+  },
+  {
+    "id": "att_lakeside_gazebo",
+    "name": "Chòi Nghỉ Mát Ven Hồ (Lakeside Pavilion)",
+    "zone": "Hồ Trung Tâm (Central Lake)",
+    "category": "rest_area",
+    "indoor_outdoor": "outdoor",
+    "thrill_level": "low",
+    "constraints": {
+      "min_height_cm": null,
+      "max_height_cm": null,
+      "min_age": 0,
+      "health_warnings": []
+    },
+    "description": "Khu vực chòi gỗ có mái che ven hồ trung tâm, nhiều cây xanh bóng mát, gió hồ thổi mát tự nhiên, thích hợp để nghỉ chân, uống nước và nạp lại năng lượng.",
+    "duration_mins": 15,
+    "average_wait_time_mins": 0
+  }
+]
