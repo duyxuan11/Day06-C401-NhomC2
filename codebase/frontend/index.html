@@ -60,35 +60,22 @@
     }
   </style>
 </head>
-<body class="min-h-screen text-slate-800 flex items-center justify-center p-4 md:p-8">
+<body class="min-h-screen text-slate-800 flex flex-col items-center justify-center bg-slate-100 p-0 md:p-4">
 
-  <div class="w-full flex flex-col items-center justify-center py-4">
-    <!-- Header/Title for the web page -->
-    <div class="text-center mb-6 max-w-md">
-      <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center justify-center gap-2">
-        <span class="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center text-white text-base">🗺️</span>
-        WonderPath AI
-      </h1>
-      <p class="text-xs text-slate-500 mt-1.5 font-medium">Trợ lý dẫn đường công viên · Bản thử nghiệm chat & quét QR</p>
-    </div>
+  <!-- Header/Title for the web page (Only visible on desktop/tablet) -->
+  <div class="text-center mb-4 max-w-md hidden md:block">
+    <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center justify-center gap-2">
+      <span class="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center text-white text-base">🗺️</span>
+      WonderPath AI
+    </h1>
+    <p class="text-xs text-slate-500 mt-1.5 font-medium">Trợ lý dẫn đường công viên · Bản thử nghiệm chat & quét QR</p>
+  </div>
 
-    <!-- Phone Mockup Device Frame Container -->
-    <div class="flex justify-center">
-      
-      <!-- Phone Mockup Device Frame -->
-      <div class="w-[360px] h-[720px] bg-slate-900 rounded-[50px] p-3 shadow-2xl border-4 border-slate-700 relative flex flex-col overflow-hidden">
-        
-        <!-- Camera Notch & Top Speaker -->
-        <div class="absolute top-4 left-1/2 -translate-x-1/2 w-32 h-5 bg-slate-900 rounded-b-xl z-50 flex items-center justify-center gap-2">
-          <div class="w-12 h-1 bg-slate-800 rounded"></div>
-          <div class="w-2.5 h-2.5 bg-slate-800 rounded-full"></div>
-        </div>
-
-        <!-- Phone Screen Container -->
-        <div class="w-full h-full bg-slate-50 rounded-[38px] overflow-hidden flex flex-col justify-between relative shadow-inner">
-          
-          <!-- Screen Header -->
-          <div class="bg-white border-b border-slate-100 px-6 pt-8 pb-3 flex items-center justify-between z-10">
+  <!-- App Container (Mobile: full screen, Desktop: centered card) -->
+  <div class="w-full h-[100dvh] md:h-[780px] md:max-w-[425px] bg-slate-50 md:rounded-[32px] md:shadow-2xl md:border md:border-slate-200/80 overflow-hidden flex flex-col justify-between relative shadow-inner">
+    
+    <!-- Screen Header -->
+    <div class="bg-white border-b border-slate-100 px-5 pt-4 pb-3 flex items-center justify-between z-10">
             <div class="flex items-center gap-2">
               <div class="w-2.5 h-2.5 bg-green-500 rounded-full pulse-dot"></div>
               <div>
@@ -449,13 +436,6 @@
               <span class="text-[9px] font-bold mt-0.5">Cá nhân</span>
             </div>
           </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
   </div>
 
   <script>
