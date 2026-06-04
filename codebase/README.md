@@ -1,13 +1,91 @@
-# Codebase
+# WonderPath AI — Codebase
 
-Đây là nơi nhóm nộp toàn bộ phần code của prototype. Mục tiêu là để giảng viên và các nhóm khác nhìn được sản phẩm chạy như thế nào, và mỗi thành viên đã đóng góp ra sao.
+Thu muc nay chua prototype WonderPath AI, gom giao dien frontend va phan Prompt/AI Logic bang Python.
 
-## Nhóm cần làm
+## 1. Chay giao dien frontend
 
-- Đưa mã nguồn của prototype vào folder này. Nếu prototype được deploy hoặc host ở nơi khác, hãy để lại đường link kèm hướng dẫn truy cập.
-- Trong file `README.md` của nhóm, ghi rõ ba điều: cách chạy prototype (các bước cài đặt và biến môi trường nếu cần), những công cụ và API đã dùng (model AI, framework, công cụ dựng giao diện…), và phần phân công ai làm gì.
-- Mỗi thành viên nên có ít nhất một commit thực chất trong repo — đây là căn cứ để ghi nhận đóng góp của từng người.
+Frontend nam trong:
 
-## Lưu ý
+```text
+codebase/frontend/index.html
+```
 
-Đừng commit những thông tin nhạy cảm như API key hay file `.env`. Nếu prototype cần các biến môi trường, hãy dùng một file `.env.example` để mô tả các biến đó thay vì để lộ giá trị thật.
+Co 2 cach chay:
+
+### Cach 1: Mo truc tiep file HTML
+
+Mo file `codebase/frontend/index.html` bang Chrome, Edge hoac Firefox.
+
+### Cach 2: Dung Live Server trong VS Code
+
+Click chuot phai vao `codebase/frontend/index.html` va chon **Open with Live Server**.
+
+Giao dien co bang gia lap ngu canh ben trai va mobile mockup ben phai. Co the test cac case:
+
+- Happy Path: gia dinh co tre nho tai Cong Khu Co Tich.
+- Low-confidence: user profile chua xac dinh.
+- Failure Path: Tau Luon Sieu Toc bao tri.
+- Emergency Path: thoi tiet dong bao canh bao do.
+
+## 2. Chay Prompt & AI Logic
+
+Phan nay dung de kiem thu prompt, response schema va Gemini API.
+
+### Cai dat
+
+```bash
+cd codebase
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+cp .env.example .env
+```
+
+Sau do dien `GEMINI_API_KEY` that vao file `.env`. Khong commit file `.env`.
+
+### Chay dry-run
+
+Dry-run chi render prompt, khong goi Gemini:
+
+```bash
+.venv/bin/python run_eval.py --dry-run
+```
+
+### Chay eval goi Gemini that
+
+```bash
+.venv/bin/python run_eval.py --model gemini-3.1-flash-lite
+```
+
+Ket qua moi lan chay duoc luu vao:
+
+```text
+codebase/runs/eval_run_YYYYMMDDTHHMMSS.json
+```
+
+## 3. Cau truc phan AI Logic
+
+```text
+server/
+├── ai/
+│   ├── prompt.py
+│   ├── response_schema.py
+│   └── gemini_client.py
+├── services/
+│   ├── context_builder.py
+│   └── mock_data_service.py
+└── utils/
+    └── safety_rules.py
+```
+
+- `prompt.py`: tao system prompt cho WonderPath AI.
+- `response_schema.py`: ep output Gemini ve JSON gom `message` va `ui_buttons`.
+- `gemini_client.py`: goi Gemini API.
+- `context_builder.py`: ghep station, user profile, weather, realtime status va attractions thanh context.
+- `mock_data_service.py`: doc du lieu trong `mock-data`.
+- `safety_rules.py`: danh dau cac rui ro nhu tro bao tri, hang doi qua lau, weather red, khong phu hop tre nho/nguoi gia.
+
+## 4. Luu y bao mat
+
+- Khong commit `.env`.
+- Chi commit `.env.example`.
+- Thu muc `.venv/`, `venv/`, `__pycache__/` duoc ignore trong `.gitignore`.

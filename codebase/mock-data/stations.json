@@ -55,6 +55,11 @@
         "walking_time_mins": 4
       },
       {
+        "attraction_id": "att_swing_carousel",
+        "distance_meters": 600,
+        "walking_time_mins": 8
+      },
+      {
         "attraction_id": "att_magic_castle",
         "distance_meters": 600,
         "walking_time_mins": 8
