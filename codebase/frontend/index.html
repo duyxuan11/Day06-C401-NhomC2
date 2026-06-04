@@ -35,6 +35,29 @@
     .pulse-dot {
       animation: pulse-custom 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
+    @keyframes scan-laser {
+      0%, 100% { top: 0%; }
+      50% { top: 100%; }
+    }
+    .laser-line {
+      position: absolute;
+      animation: scan-laser 2s linear infinite;
+    }
+    @keyframes pulse-ring {
+      0% { r: 10; opacity: 1; stroke-width: 1.5; }
+      100% { r: 24; opacity: 0; stroke-width: 0.5; }
+    }
+    .active-station-ring {
+      animation: pulse-ring 1.8s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
+    }
+    @keyframes dashmove {
+      to {
+        stroke-dashoffset: -20;
+      }
+    }
+    .animated-route {
+      animation: dashmove 1.2s linear infinite;
+    }
   </style>
 </head>
 <body class="min-h-screen text-slate-800 flex items-center justify-center p-4 md:p-8">
@@ -76,39 +99,258 @@
             <div class="text-xs font-semibold text-slate-400" id="phone-clock">09:45 AM</div>
           </div>
 
-          <!-- Chat logs viewport scrollbar hidden -->
-          <div id="chat-viewport" class="flex-1 overflow-y-auto px-4 py-4 space-y-4 no-scrollbar bg-slate-50">
-            
-            <!-- Welcome System Message -->
-            <div class="text-center">
-              <span class="inline-block px-3 py-1 bg-slate-200 text-[10px] text-slate-500 rounded-full font-medium" id="chat-date">Hôm nay, 09:45 AM</span>
+          <!-- TAB 1: Chat AI (Active by default) -->
+          <div id="tab-chat" class="flex-1 flex flex-col justify-between overflow-hidden">
+            <!-- Chat logs viewport scrollbar hidden -->
+            <div id="chat-viewport" class="flex-1 overflow-y-auto px-4 py-4 space-y-4 no-scrollbar bg-slate-50">
+              
+              <!-- Welcome System Message -->
+              <div class="text-center">
+                <span class="inline-block px-3 py-1 bg-slate-200 text-[10px] text-slate-500 rounded-full font-medium" id="chat-date">Hôm nay, 09:45 AM</span>
+              </div>
+
+              <!-- Messages Area (Rendered Dynamically) -->
+              <div id="messages-container" class="space-y-4">
+                <!-- Initial Welcome Bot Message -->
+                <div class="flex items-start gap-2.5">
+                  <!-- Avatar -->
+                  <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center border border-indigo-200 flex-shrink-0">
+                    <span class="text-sm">🤖</span>
+                  </div>
+                  <!-- Chat Bubble Card -->
+                  <div class="bg-white border border-indigo-50 rounded-2xl rounded-tl-none p-4 max-w-[85%] shadow-sm space-y-3">
+                    <div class="text-xs font-bold text-indigo-600 flex items-center gap-1.5">
+                      <span>📍 Trạm quét QR</span>
+                    </div>
+                    <p class="text-[11px] text-slate-600 leading-relaxed font-semibold">
+                      Chào mừng bạn đến với WonderPath AI! Vui lòng quét mã QR tại các trạm thông tin (nhấp nút 📲 Quét mã QR ở dưới) hoặc nhập tin nhắn chat để bắt đầu.<br><br>
+                      💡 Bạn có thể chat để thay đổi ngữ cảnh giả lập:<br>
+                      • Nhập <b>"mưa"</b> hoặc <b>"dông bão"</b> để giả lập thời tiết xấu.<br>
+                      • Nhập <b>"bảo trì"</b> để giả lập tàu lượn bảo trì.<br>
+                      • Nhập <b>"bình thường"</b> để đặt lại trạng thái nắng ấm.<br>
+                      • Nhập <b>"gia đình"</b>, <b>"cảm giác mạnh"</b> hoặc <b>"thư giãn"</b> để đổi nhóm du khách.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
             </div>
 
-            <!-- Messages Area (Rendered Dynamically) -->
-            <div id="messages-container" class="space-y-4">
-              <!-- Initial Welcome Bot Message -->
-              <div class="flex items-start gap-2.5">
-                <!-- Avatar -->
-                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center border border-indigo-200 flex-shrink-0">
-                  <span class="text-sm">🤖</span>
-                </div>
-                <!-- Chat Bubble Card -->
-                <div class="bg-white border border-indigo-50 rounded-2xl rounded-tl-none p-4 max-w-[85%] shadow-sm space-y-3">
-                  <div class="text-xs font-bold text-indigo-600 flex items-center gap-1.5">
-                    <span>📍 Trạm quét QR</span>
+            <!-- Quick Replies Carousel (Horizontal scrollable bar) -->
+            <div id="quick-replies-container" class="px-3 py-2 flex gap-2 overflow-x-auto no-scrollbar bg-slate-50 border-t border-slate-100 hidden flex-shrink-0 z-10">
+              <!-- Dynamic buttons will be inserted here -->
+            </div>
+
+            <!-- Chat Input Bar -->
+            <div id="chat-input-bar" class="bg-white border-t border-slate-100 px-3 py-2 flex items-center gap-2 z-10">
+              <div class="flex-1 flex items-center bg-slate-100 rounded-full px-3 py-1.5 border border-slate-200 focus-within:ring-2 focus-within:ring-orange-500 focus-within:bg-white focus-within:border-orange-400 transition-all">
+                <input type="text" id="chat-input" placeholder="Hỏi WonderPath..." class="w-full bg-transparent border-none text-xs focus:outline-none text-slate-800" autocomplete="off">
+              </div>
+              <button id="btn-send" class="w-8 h-8 bg-orange-500 hover:bg-orange-600 rounded-full flex items-center justify-center text-white transition active:scale-95 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- TAB 2: Bản đồ công viên (Hidden by default) -->
+          <div id="tab-map" class="flex-1 flex flex-col overflow-hidden hidden bg-slate-50">
+            <div class="p-4 bg-white border-b border-slate-100 flex items-center justify-between flex-shrink-0">
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1">
+                <span>🗺️</span> Bản đồ công viên
+              </span>
+              <span class="text-[9px] px-2 py-0.5 bg-orange-100 text-orange-600 rounded-full font-bold" id="map-status-weather">Thời tiết: Nắng ấm</span>
+            </div>
+            <!-- Map Interactive SVG Container -->
+            <div class="flex-1 relative overflow-hidden bg-slate-50 flex items-center justify-center p-2" id="map-placeholder-container">
+              <!-- Zoom controls overlay -->
+              <div class="absolute top-4 right-4 flex flex-col gap-1.5 z-20">
+                <button onclick="zoomMap(1.2)" class="w-8 h-8 bg-white/90 hover:bg-white text-slate-800 rounded-full shadow-md flex items-center justify-center text-sm font-extrabold active:scale-95 transition border border-slate-200/50 backdrop-blur-sm select-none">+</button>
+                <button onclick="zoomMap(0.8)" class="w-8 h-8 bg-white/90 hover:bg-white text-slate-800 rounded-full shadow-md flex items-center justify-center text-sm font-extrabold active:scale-95 transition border border-slate-200/50 backdrop-blur-sm select-none">-</button>
+                <button onclick="resetZoom()" class="w-8 h-8 bg-white/90 hover:bg-white text-slate-800 rounded-full shadow-md flex items-center justify-center text-[10px] font-bold active:scale-95 transition border border-slate-200/50 backdrop-blur-sm select-none">🔄</button>
+              </div>
+
+              <svg viewBox="0 0 300 400" class="w-full h-full select-none cursor-grab" id="park-svg">
+                <!-- Group wrapper for Zoom & Pan -->
+                <g id="map-zoom-group" style="transform-origin: center; transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);">
+                  <!-- Background pattern / grass -->
+                  <rect width="300" height="400" fill="#f8fafc" rx="20"/>
+                  
+                  <!-- Forest / Green areas -->
+                  <path d="M 0 0 C 80 0, 120 50, 100 120 C 80 180, 20 220, 0 250 Z" fill="#f1f5f9" opacity="0.6"/>
+                  <path d="M 300 150 C 260 200, 220 220, 240 300 C 260 380, 300 380, 300 400 Z" fill="#f1f5f9" opacity="0.6"/>
+                  
+                  <!-- Central Lake -->
+                  <path d="M 140 80 C 180 60, 250 50, 260 110 C 270 160, 210 170, 170 140 C 140 120, 120 100, 140 80 Z" fill="#e0f2fe" stroke="#bae6fd" stroke-width="2"/>
+                  <text x="200" y="110" fill="#0369a1" font-size="8" font-weight="bold" opacity="0.6" text-anchor="middle">Hồ Trung Tâm</text>
+                  
+                  <!-- Pathways (Background roads) -->
+                  <path d="M 70 330 L 150 240 M 150 240 L 190 100 M 150 240 L 230 330 M 70 330 C 100 360, 200 360, 230 330" fill="none" stroke="#e2e8f0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M 70 330 L 150 240 M 150 240 L 190 100 M 150 240 L 230 330 M 70 330 C 100 360, 200 360, 230 330" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+                  <!-- Active / Animated Route Path -->
+                  <path id="nav-route" d="" fill="none" stroke="#f97316" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6,4" class="hidden" />
+
+                  <!-- Station Markers -->
+                  <!-- Trạm 1: Cổng Cổ Tích -->
+                  <g id="marker-qr_station_01" class="cursor-pointer" onclick="scanStation('qr_station_01', 'Trạm 1 - Cổng Cổ Tích')">
+                    <circle cx="70" cy="330" r="12" fill="#fff" stroke="#f97316" stroke-width="2" class="shadow-sm"/>
+                    <circle cx="70" cy="330" r="4" fill="#f97316" id="pulse-qr_station_01"/>
+                    <text x="70" y="352" fill="#475569" font-size="7" font-weight="bold" text-anchor="middle">Trạm 1 (Cổng Cổ Tích)</text>
+                  </g>
+
+                  <!-- Trạm 2: Ngã Tư Phiêu Lưu -->
+                  <g id="marker-qr_station_02" class="cursor-pointer" onclick="scanStation('qr_station_02', 'Trạm 2 - Ngã Tư Phiêu Lưu')">
+                    <circle cx="150" cy="240" r="12" fill="#fff" stroke="#f97316" stroke-width="2" class="shadow-sm"/>
+                    <circle cx="150" cy="240" r="4" fill="#f97316" id="pulse-qr_station_02"/>
+                    <text x="150" y="262" fill="#475569" font-size="7" font-weight="bold" text-anchor="middle">Trạm 2 (Phiêu Lưu)</text>
+                  </g>
+
+                  <!-- Trạm 3: Bến Thuyền -->
+                  <g id="marker-qr_station_03" class="cursor-pointer" onclick="scanStation('qr_station_03', 'Trạm 3 - Bến Thuyền')">
+                    <circle cx="190" cy="100" r="12" fill="#fff" stroke="#f97316" stroke-width="2" class="shadow-sm"/>
+                    <circle cx="190" cy="100" r="4" fill="#f97316" id="pulse-qr_station_03"/>
+                    <text x="190" y="122" fill="#475569" font-size="7" font-weight="bold" text-anchor="middle">Trạm 3 (Bến Thuyền)</text>
+                  </g>
+
+                  <!-- Trạm 4: Công Viên Nước -->
+                  <g id="marker-qr_station_04" class="cursor-pointer" onclick="scanStation('qr_station_04', 'Trạm 4 - Cổng CV Nước')">
+                    <circle cx="230" cy="330" r="12" fill="#fff" stroke="#f97316" stroke-width="2" class="shadow-sm"/>
+                    <circle cx="230" cy="330" r="4" fill="#f97316" id="pulse-qr_station_04"/>
+                    <text x="230" y="352" fill="#475569" font-size="7" font-weight="bold" text-anchor="middle">Trạm 4 (Cổng CV Nước)</text>
+                  </g>
+
+                  <!-- Attraction Pins -->
+                  <!-- Show Rồng Lửa (near Trạm 1) -->
+                  <g id="pin-att_show_fire_dragon" class="opacity-80">
+                    <circle cx="35" cy="300" r="8" fill="#ef4444"/>
+                    <text x="35" y="303" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🐉</text>
+                    <text x="35" y="313" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle">Show Rồng Lửa</text>
+                  </g>
+
+                  <!-- Lâu Đài Huyền Bí (near Trạm 1) -->
+                  <g id="pin-att_magic_castle" class="opacity-80">
+                    <circle cx="105" cy="300" r="8" fill="#8b5cf6"/>
+                    <text x="105" y="303" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🏰</text>
+                    <text x="105" y="313" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle">Lâu Đài Cổ</text>
+                  </g>
+
+                  <!-- Tàu Lượn Siêu Tốc (near Trạm 2) -->
+                  <g id="pin-att_roller_coaster" class="opacity-80">
+                    <circle cx="100" cy="200" r="8" fill="#f59e0b"/>
+                    <text x="100" y="203" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🎢</text>
+                    <text x="100" y="213" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle" id="lbl-roller_coaster">Tàu Lượn</text>
+                  </g>
+
+                  <!-- Đu Quay Dây Văng (near Trạm 2) -->
+                  <g id="pin-att_swing_carousel" class="opacity-80">
+                    <circle cx="200" cy="200" r="8" fill="#10b981"/>
+                    <text x="200" y="203" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🎡</text>
+                    <text x="200" y="213" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle">Đu Quay</text>
+                  </g>
+
+                  <!-- Fast Food (near Trạm 2) -->
+                  <g id="pin-att_food_court_fast" class="opacity-80">
+                    <circle cx="150" cy="300" r="8" fill="#ec4899"/>
+                    <text x="150" y="303" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🍔</text>
+                    <text x="150" y="311" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle">Khu Ẩm Thực</text>
+                  </g>
+
+                  <!-- KidZone (near Trạm 3) -->
+                  <g id="pin-att_indoor_playground" class="opacity-80">
+                    <circle cx="135" cy="80" r="8" fill="#06b6d4"/>
+                    <text x="135" y="83" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">👶</text>
+                    <text x="135" y="93" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle">KidZone</text>
+                  </g>
+
+                  <!-- Gazebo (near Trạm 3) -->
+                  <g id="pin-att_lakeside_gazebo" class="opacity-80">
+                    <circle cx="245" cy="80" r="8" fill="#14b8a6"/>
+                    <text x="245" y="83" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">🛖</text>
+                    <text x="245" y="93" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle">Chòi Nghỉ</text>
+                  </g>
+
+                  <!-- Show Nhạc Nước (Lake Center) -->
+                  <g id="pin-att_show_water_music" class="opacity-80">
+                    <circle cx="190" cy="140" r="8" fill="#3b82f6"/>
+                    <text x="190" y="143" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold"> Fountain⛲</text>
+                    <text x="190" y="153" fill="#64748b" font-size="6" font-weight="semibold" text-anchor="middle">Nhạc Nước</text>
+                  </g>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <!-- TAB 3: Cá nhân (Hidden by default) -->
+          <div id="tab-profile" class="flex-1 flex flex-col overflow-y-auto p-4 space-y-4 hidden bg-slate-50 no-scrollbar">
+            <div class="flex items-center gap-2 border-b border-slate-100 pb-3 flex-shrink-0">
+              <span class="text-base">👤</span>
+              <div>
+                <h3 class="text-xs font-bold text-slate-800">Cài đặt Cá nhân</h3>
+                <p class="text-[9px] text-slate-400">Tùy chỉnh đối tượng để nhận gợi ý AI phù hợp</p>
+              </div>
+            </div>
+
+            <!-- Group Type Selection -->
+            <div class="space-y-2">
+              <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Nhóm du khách</label>
+              <div class="space-y-2" id="profile-group-options">
+                <!-- Option Family -->
+                <div class="border-2 border-slate-100 rounded-2xl p-3 bg-white cursor-pointer hover:border-orange-200 transition-all flex items-center justify-between" id="opt-family" onclick="selectProfileGroup('family_with_kids')">
+                  <div class="flex items-center gap-2.5">
+                    <span class="text-xl">👨‍👩‍👧‍👦</span>
+                    <div>
+                      <div class="text-xs font-bold text-slate-700">Gia đình có trẻ nhỏ</div>
+                      <div class="text-[9px] text-slate-400">Ưu tiên trò chơi nhẹ nhàng, show diễn</div>
+                    </div>
                   </div>
-                  <p class="text-[11px] text-slate-600 leading-relaxed font-semibold">
-                    Chào mừng bạn đến với WonderPath AI! Vui lòng quét mã QR tại các trạm thông tin (nhấp nút 📲 Quét mã QR ở dưới) hoặc nhập tin nhắn chat để bắt đầu.<br><br>
-                    💡 Bạn có thể chat để thay đổi ngữ cảnh giả lập:<br>
-                    • Nhập <b>"mưa"</b> hoặc <b>"dông bão"</b> để giả lập thời tiết xấu.<br>
-                    • Nhập <b>"bảo trì"</b> để giả lập tàu lượn bảo trì.<br>
-                    • Nhập <b>"bình thường"</b> để đặt lại trạng thái nắng ấm.<br>
-                    • Nhập <b>"gia đình"</b>, <b>"cảm giác mạnh"</b> hoặc <b>"thư giãn"</b> để đổi nhóm du khách.
-                  </p>
+                  <div class="w-4 h-4 rounded-full border border-slate-200 flex items-center justify-center select-dot"></div>
+                </div>
+
+                <!-- Option Thrill Seekers -->
+                <div class="border-2 border-slate-100 rounded-2xl p-3 bg-white cursor-pointer hover:border-orange-200 transition-all flex items-center justify-between" id="opt-thrill" onclick="selectProfileGroup('thrill_seekers')">
+                  <div class="flex items-center gap-2.5">
+                    <span class="text-xl">🎢</span>
+                    <div>
+                      <div class="text-xs font-bold text-slate-700">Cảm giác mạnh</div>
+                      <div class="text-[9px] text-slate-400">Ưu tiên trò chơi mạo hiểm, tốc độ</div>
+                    </div>
+                  </div>
+                  <div class="w-4 h-4 rounded-full border border-slate-200 flex items-center justify-center select-dot"></div>
+                </div>
+
+                <!-- Option Leisure -->
+                <div class="border-2 border-slate-100 rounded-2xl p-3 bg-white cursor-pointer hover:border-orange-200 transition-all flex items-center justify-between" id="opt-leisure" onclick="selectProfileGroup('leisure')">
+                  <div class="flex items-center gap-2.5">
+                    <span class="text-xl">🍃</span>
+                    <div>
+                      <div class="text-xs font-bold text-slate-700">Thư thả nghỉ dưỡng</div>
+                      <div class="text-[9px] text-slate-400">Đi dạo, nghỉ mát, xem trình diễn nhẹ</div>
+                    </div>
+                  </div>
+                  <div class="w-4 h-4 rounded-full border border-slate-200 flex items-center justify-center select-dot"></div>
                 </div>
               </div>
             </div>
 
+            <!-- Height selector (For children) -->
+            <div id="child-height-section" class="space-y-2 bg-white rounded-2xl p-3 border border-slate-100 hidden">
+              <div class="flex justify-between items-center">
+                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Chiều cao trẻ nhỏ (cm)</label>
+                <span class="text-xs font-bold text-orange-600" id="lbl-child-height">100 cm</span>
+              </div>
+              <input type="range" min="80" max="150" value="100" class="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-orange-500" id="input-child-height" oninput="updateChildHeightDisplay(this.value)">
+              <div class="flex justify-between text-[8px] text-slate-400">
+                <span>80cm</span>
+                <span>110cm</span>
+                <span>150cm</span>
+              </div>
+            </div>
+
+            <button onclick="saveProfileSettings()" class="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-2xl py-3 text-xs font-bold transition-all active:scale-95 shadow-md flex items-center justify-center gap-1.5">
+              <span>Lưu cài đặt</span>
+            </button>
           </div>
 
           <!-- Toast Alert Overlay Container (Floats over the bottom of screen) -->
@@ -124,8 +366,42 @@
 
           <!-- QR Scanner Modal Bottom Sheet -->
           <div id="qr-modal" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-30 transition-all duration-300 opacity-0 pointer-events-none flex flex-col justify-end">
+            
+            <!-- QR Camera Scan Simulation View -->
+            <div id="qr-scanner-view" class="absolute inset-0 bg-slate-950 flex flex-col items-center justify-between p-6 transition-opacity duration-300 z-40">
+              <!-- Top bar -->
+              <div class="w-full flex justify-between items-center text-white mt-8">
+                <span class="text-xs font-bold flex items-center gap-1.5">
+                  <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+                  CAMERA QUÉT QR
+                </span>
+                <button onclick="cancelScan()" class="text-white hover:text-slate-200 text-sm font-semibold p-1">✕</button>
+              </div>
+
+              <!-- Scanner frame overlay -->
+              <div class="relative w-48 h-48 border-2 border-slate-500 rounded-2xl flex items-center justify-center overflow-hidden bg-slate-900/50">
+                <!-- Corner markers -->
+                <div class="absolute top-0 left-0 w-5 h-5 border-t-4 border-l-4 border-orange-500 rounded-tl-md"></div>
+                <div class="absolute top-0 right-0 w-5 h-5 border-t-4 border-r-4 border-orange-500 rounded-tr-md"></div>
+                <div class="absolute bottom-0 left-0 w-5 h-5 border-b-4 border-l-4 border-orange-500 rounded-bl-md"></div>
+                <div class="absolute bottom-0 right-0 w-5 h-5 border-b-4 border-r-4 border-orange-500 rounded-br-md"></div>
+                
+                <!-- Laser line -->
+                <div class="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-orange-500 to-transparent shadow-[0_0_8px_#f97316] laser-line" style="top: 0;"></div>
+                
+                <!-- QR Code watermark placeholder -->
+                <span class="text-4xl opacity-10 select-none">📷</span>
+              </div>
+
+              <!-- Scanning status text -->
+              <div class="text-center space-y-1 mb-8">
+                <p class="text-xs font-semibold text-white">Di chuyển camera đến gần mã QR</p>
+                <p class="text-[9px] text-slate-400">Đang quét tìm trạm tự động...</p>
+              </div>
+            </div>
+
             <!-- Modal Content -->
-            <div class="bg-white rounded-t-[32px] p-5 space-y-4 transform translate-y-full transition-transform duration-300 shadow-2xl" id="qr-modal-content">
+            <div class="bg-white rounded-t-[32px] p-5 space-y-4 transform translate-y-full transition-transform duration-300 shadow-2xl hidden" id="qr-modal-content">
               <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                   <span>📲 Mô phỏng Quét mã QR</span>
@@ -153,34 +429,22 @@
             </div>
           </div>
 
-          <!-- Chat Input Bar -->
-          <div class="bg-white border-t border-slate-100 px-3 py-2 flex items-center gap-2 z-10">
-            <div class="flex-1 flex items-center bg-slate-100 rounded-full px-3 py-1.5 border border-slate-200 focus-within:ring-2 focus-within:ring-orange-500 focus-within:bg-white focus-within:border-orange-400 transition-all">
-              <input type="text" id="chat-input" placeholder="Hỏi WonderPath..." class="w-full bg-transparent border-none text-xs focus:outline-none text-slate-800" autocomplete="off">
-            </div>
-            <button id="btn-send" class="w-8 h-8 bg-orange-500 hover:bg-orange-600 rounded-full flex items-center justify-center text-white transition active:scale-95 shadow-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-              </svg>
-            </button>
-          </div>
-
           <!-- Bottom Navigation Bar (Matching user's screenshot layout) -->
           <div class="bg-white border-t border-slate-100 px-6 py-2.5 flex items-center justify-around z-10 select-none">
-            <div class="flex flex-col items-center cursor-pointer text-slate-400 hover:text-orange-500 transition">
+            <div id="nav-map" class="flex flex-col items-center cursor-pointer text-slate-400 hover:text-orange-500 transition-colors">
               <span class="text-lg">🗺️</span>
               <span class="text-[9px] font-bold mt-0.5">Bản đồ</span>
             </div>
             
             <!-- Active QR scan circle button -->
-            <div class="flex flex-col items-center justify-center">
+            <div id="nav-chat" class="flex flex-col items-center justify-center cursor-pointer">
               <button id="btn-ai-assist" class="w-10 h-10 bg-orange-500 hover:bg-orange-600 rounded-full shadow-md flex items-center justify-center text-white text-base transition-transform hover:scale-105 active:scale-95 mb-0.5">
                 📲
               </button>
-              <span class="text-[9px] font-bold text-orange-500">Quét mã QR</span>
+              <span id="nav-chat-text" class="text-[9px] font-bold text-orange-500">Quét mã QR</span>
             </div>
 
-            <div class="flex flex-col items-center cursor-pointer text-slate-400 hover:text-orange-500 transition">
+            <div id="nav-profile" class="flex flex-col items-center cursor-pointer text-slate-400 hover:text-orange-500 transition-colors">
               <span class="text-lg">👤</span>
               <span class="text-[9px] font-bold mt-0.5">Cá nhân</span>
             </div>
@@ -202,6 +466,18 @@
     let weatherCondition = 'sunny';
     let isCoasterMaint = false;
     let undoTimeout = null;
+    
+    // Tab switching state
+    let currentTab = 'chat';
+    let tempGroupType = null;
+
+    // Zoom & Pan state
+    let zoomLevel = 1.0;
+    let panX = 0;
+    let panY = 0;
+    let isPanning = false;
+    let startX = 0;
+    let startY = 0;
 
     // UI Nodes
     const messagesContainer = document.getElementById('messages-container');
@@ -222,6 +498,270 @@
     const qrModal = document.getElementById('qr-modal');
     const qrModalContent = document.getElementById('qr-modal-content');
     const btnCloseQr = document.getElementById('btn-close-qr');
+
+    // Tab Views & Navigation Nodes
+    const tabChat = document.getElementById('tab-chat');
+    const tabMap = document.getElementById('tab-map');
+    const tabProfile = document.getElementById('tab-profile');
+    const navMap = document.getElementById('nav-map');
+    const navChat = document.getElementById('nav-chat');
+    const navProfile = document.getElementById('nav-profile');
+    const navChatText = document.getElementById('nav-chat-text');
+
+    // Profile Tab UI Nodes
+    const childHeightSection = document.getElementById('child-height-section');
+    const lblChildHeight = document.getElementById('lbl-child-height');
+    const inputChildHeight = document.getElementById('input-child-height');
+    const optFamily = document.getElementById('opt-family');
+    const optThrill = document.getElementById('opt-thrill');
+    const optLeisure = document.getElementById('opt-leisure');
+
+    // Tab & Profile UI functions
+    function switchTab(tabId) {
+      currentTab = tabId;
+      
+      // Hide all tabs
+      tabChat.classList.add('hidden');
+      tabMap.classList.add('hidden');
+      tabProfile.classList.add('hidden');
+      
+      // Reset navigation classes
+      navMap.className = "flex flex-col items-center cursor-pointer text-slate-400 hover:text-orange-500 transition-colors";
+      navProfile.className = "flex flex-col items-center cursor-pointer text-slate-400 hover:text-orange-500 transition-colors";
+      navChatText.className = "text-[9px] font-bold text-slate-400";
+      
+      if (tabId === 'chat') {
+        tabChat.classList.remove('hidden');
+        navChatText.className = "text-[9px] font-bold text-orange-500";
+        chatViewport.scrollTo({ top: chatViewport.scrollHeight });
+      } else if (tabId === 'map') {
+        tabMap.classList.remove('hidden');
+        navMap.className = "flex flex-col items-center cursor-pointer text-orange-500 transition-colors";
+      } else if (tabId === 'profile') {
+        tabProfile.classList.remove('hidden');
+        navProfile.className = "flex flex-col items-center cursor-pointer text-orange-500 transition-colors";
+        
+        // Pre-select group type from active sessionProfile
+        if (sessionProfile && sessionProfile.group_type) {
+          selectProfileGroup(sessionProfile.group_type);
+          if (sessionProfile.child_height) {
+            inputChildHeight.value = sessionProfile.child_height;
+            updateChildHeightDisplay(sessionProfile.child_height);
+          }
+        } else {
+          // Default state
+          selectProfileGroup('family_with_kids');
+        }
+      }
+    }
+
+    function selectProfileGroup(groupType) {
+      tempGroupType = groupType;
+      
+      // Reset styles
+      const options = ['family_with_kids', 'thrill_seekers', 'leisure'];
+      options.forEach(opt => {
+        const card = document.getElementById(opt === 'family_with_kids' ? 'opt-family' : (opt === 'thrill_seekers' ? 'opt-thrill' : 'opt-leisure'));
+        const dot = card.querySelector('.select-dot');
+        
+        card.className = "border-2 border-slate-100 rounded-2xl p-3 bg-white cursor-pointer hover:border-orange-200 transition-all flex items-center justify-between";
+        dot.className = "w-4 h-4 rounded-full border border-slate-200 flex items-center justify-center select-dot";
+        dot.innerHTML = "";
+      });
+      
+      // Set active style
+      const activeCard = document.getElementById(groupType === 'family_with_kids' ? 'opt-family' : (groupType === 'thrill_seekers' ? 'opt-thrill' : 'opt-leisure'));
+      const activeDot = activeCard.querySelector('.select-dot');
+      activeCard.className = "border-2 border-orange-500 rounded-2xl p-3 bg-white cursor-pointer transition-all flex items-center justify-between";
+      activeDot.className = "w-4 h-4 rounded-full bg-orange-500 text-white flex items-center justify-center text-[10px] select-dot font-bold";
+      activeDot.innerHTML = "✓";
+      
+      // Show/hide child height section
+      if (groupType === 'family_with_kids') {
+        childHeightSection.classList.remove('hidden');
+      } else {
+        childHeightSection.classList.add('hidden');
+      }
+    }
+
+    function updateChildHeightDisplay(val) {
+      lblChildHeight.textContent = val + " cm";
+    }
+
+    function saveProfileSettings() {
+      sessionProfile = { group_type: tempGroupType };
+      if (tempGroupType === 'family_with_kids') {
+        sessionProfile.child_height = parseInt(inputChildHeight.value);
+      }
+      
+      showToast("👤 Đã lưu thiết lập cá nhân!", "👤");
+      
+      setTimeout(() => {
+        switchTab('chat');
+        // Auto-trigger scan response with new profile context
+        triggerScan();
+      }, 1000);
+     }
+
+    // SVG Park Map Helper functions
+    function drawRoute(fromStation, toTarget) {
+      const navRoute = document.getElementById('nav-route');
+      if (!navRoute) return;
+      
+      const routes = {
+        // Station 1 (Cổng Cổ Tích - 70, 330)
+        'qr_station_01->att_show_fire_dragon': 'M 70 330 L 35 300',
+        'qr_station_01->att_magic_castle': 'M 70 330 L 105 300',
+        // Station 2 (Ngã Tư Phiêu Lưu - 150, 240)
+        'qr_station_02->att_roller_coaster': 'M 150 240 L 100 200',
+        'qr_station_02->att_swing_carousel': 'M 150 240 L 200 200',
+        'qr_station_02->att_food_court_fast': 'M 150 240 L 150 300',
+        // Station 3 (Bến Thuyền - 190, 100)
+        'qr_station_03->att_indoor_playground': 'M 190 100 L 135 80',
+        'qr_station_03->att_lakeside_gazebo': 'M 190 100 L 245 80',
+        'qr_station_03->att_show_water_music': 'M 190 100 L 190 140'
+      };
+      
+      const key = `${fromStation}->${toTarget}`;
+      const pathD = routes[key];
+      
+      if (pathD) {
+        navRoute.setAttribute('d', pathD);
+        navRoute.classList.remove('hidden');
+        navRoute.classList.add('animated-route');
+      } else {
+        navRoute.classList.add('hidden');
+        navRoute.classList.remove('animated-route');
+      }
+    }
+
+    function updateActiveStationMarker() {
+      // Remove pulsing rings from all groups
+      const stations = ['qr_station_01', 'qr_station_02', 'qr_station_03', 'qr_station_04'];
+      stations.forEach(id => {
+        const ring = document.getElementById(`ring-${id}`);
+        if (ring) ring.remove();
+        
+        // Reset marker circle styling
+        const markerGroup = document.getElementById(`marker-${id}`);
+        if (markerGroup) {
+          const mainCircle = markerGroup.querySelector('circle');
+          mainCircle.setAttribute('stroke', '#cbd5e1'); // light gray border
+          mainCircle.setAttribute('stroke-width', '1.5');
+        }
+      });
+      
+      // Add pulsing ring to current active station
+      const activeGroup = document.getElementById(`marker-${currentStationId}`);
+      if (activeGroup) {
+        // Highlight main circle
+        const mainCircle = activeGroup.querySelector('circle');
+        mainCircle.setAttribute('stroke', '#f97316'); // orange border
+        mainCircle.setAttribute('stroke-width', '2.5');
+        
+        // Add pulsing ring element
+        const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        ring.setAttribute('id', `ring-${currentStationId}`);
+        ring.setAttribute('cx', activeGroup.querySelector('circle').getAttribute('cx'));
+        ring.setAttribute('cy', activeGroup.querySelector('circle').getAttribute('cy'));
+        ring.setAttribute('r', '12');
+        ring.setAttribute('fill', 'none');
+        ring.setAttribute('stroke', '#f97316');
+        ring.setAttribute('stroke-width', '2');
+        ring.setAttribute('class', 'active-station-ring');
+        
+        activeGroup.insertBefore(ring, activeGroup.firstChild);
+      }
+    }
+
+    // Zoom & Pan Map Logic
+    function zoomMap(factor) {
+      const zoomGroup = document.getElementById('map-zoom-group');
+      if (!zoomGroup) return;
+      
+      const newZoom = zoomLevel * factor;
+      if (newZoom >= 0.6 && newZoom <= 3.0) {
+        zoomGroup.style.transition = 'transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1)';
+        zoomLevel = newZoom;
+        applyTransform();
+      }
+    }
+
+    function resetZoom() {
+      const zoomGroup = document.getElementById('map-zoom-group');
+      if (!zoomGroup) return;
+      
+      zoomGroup.style.transition = 'transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      zoomLevel = 1.0;
+      panX = 0;
+      panY = 0;
+      applyTransform();
+    }
+
+    function applyTransform() {
+      const zoomGroup = document.getElementById('map-zoom-group');
+      if (!zoomGroup) return;
+      
+      // Constraint panning bounds based on zoom
+      const maxPan = 150 * zoomLevel;
+      panX = Math.max(-maxPan, Math.min(maxPan, panX));
+      panY = Math.max(-maxPan, Math.min(maxPan, panY));
+      
+      zoomGroup.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+    }
+
+    function initMapPanEvents() {
+      const svg = document.getElementById('park-svg');
+      const zoomGroup = document.getElementById('map-zoom-group');
+      if (!svg || !zoomGroup) return;
+
+      // Mouse pan event handlers
+      svg.addEventListener('mousedown', (e) => {
+        isPanning = true;
+        startX = e.clientX - panX;
+        startY = e.clientY - panY;
+        svg.classList.remove('cursor-grab');
+        svg.classList.add('cursor-grabbing');
+        zoomGroup.style.transition = 'none'; // disable animation during drag
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isPanning) return;
+        panX = e.clientX - startX;
+        panY = e.clientY - startY;
+        applyTransform();
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isPanning) {
+          isPanning = false;
+          svg.classList.remove('cursor-grabbing');
+          svg.classList.add('cursor-grab');
+        }
+      });
+
+      // Touch pan event handlers (Mobile)
+      svg.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          isPanning = true;
+          startX = e.touches[0].clientX - panX;
+          startY = e.touches[0].clientY - panY;
+          zoomGroup.style.transition = 'none';
+        }
+      });
+
+      svg.addEventListener('touchmove', (e) => {
+        if (!isPanning || e.touches.length !== 1) return;
+        e.preventDefault(); // prevent container vertical bounce
+        panX = e.touches[0].clientX - startX;
+        panY = e.touches[0].clientY - startY;
+        applyTransform();
+      }, { passive: false });
+
+      svg.addEventListener('touchend', () => {
+        isPanning = false;
+      });
+    }
 
     // Init Clock & Date
     function updateClock() {
@@ -308,31 +848,34 @@
 
       const div = document.createElement('div');
       div.className = 'flex items-start gap-2.5';
-      
-      let buttonsHtml = '';
+
+      // Clear quick replies
+      const quickRepliesContainer = document.getElementById('quick-replies-container');
+      quickRepliesContainer.innerHTML = '';
+      quickRepliesContainer.classList.add('hidden');
+
+      // Populate Quick Replies Carousel
       if (response.ui_buttons && response.ui_buttons.length > 0) {
-        buttonsHtml = `<div class="space-y-2 pt-2">`;
         response.ui_buttons.forEach((btn, index) => {
-          let btnStyleClass = 'border border-cyan-400 text-cyan-600 hover:bg-cyan-50';
+          let pillStyle = 'border border-slate-200 text-slate-700 bg-white hover:bg-slate-50';
           if (index === 0 && btn.action !== 'update_profile') {
-            // Primary action (matching brown design from screenshot)
-            btnStyleClass = 'bg-[#9C4B0C] hover:bg-amber-900 text-white';
+            pillStyle = 'bg-[#9C4B0C] hover:bg-amber-900 text-white border-[#9C4B0C]';
           } else if (btn.action === 'update_profile') {
-            btnStyleClass = 'border border-indigo-400 text-indigo-600 hover:bg-indigo-50';
-          } else if (btn.label.includes('🚨') || btn.label.includes('Chỉ đường trú')) {
-            btnStyleClass = 'bg-red-600 hover:bg-red-700 text-white animate-pulse';
+            pillStyle = 'border border-indigo-200 text-indigo-600 bg-indigo-50 hover:bg-indigo-100';
+          }
+          if (btn.label.includes('🚨') || btn.label.includes('Chỉ đường trú')) {
+            pillStyle = 'bg-red-600 hover:bg-red-700 text-white border-red-600 animate-pulse';
           }
 
-          buttonsHtml += `
-            <button 
-              class="w-full rounded-2xl py-3 px-4 font-semibold text-[10px] transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-sm ${btnStyleClass}"
-              onclick="handleButtonClick('${btn.label}', '${btn.action}', '${btn.target_id || ''}', ${JSON.stringify(btn.data || {}).replace(/"/g, '&quot;')})"
-            >
-              <span>${btn.label}</span>
-            </button>
-          `;
+          const buttonEl = document.createElement('button');
+          buttonEl.className = `flex-shrink-0 px-4 py-2.5 rounded-full text-[10px] font-bold shadow-sm transition active:scale-95 ${pillStyle}`;
+          buttonEl.innerHTML = `<span>${btn.label}</span>`;
+          buttonEl.onclick = () => {
+            handleButtonClick(btn.label, btn.action, btn.target_id || '', btn.data || {});
+          };
+          quickRepliesContainer.appendChild(buttonEl);
         });
-        buttonsHtml += `</div>`;
+        quickRepliesContainer.classList.remove('hidden');
       }
 
       // Image placeholder (Map illustration matching screenshot)
@@ -379,18 +922,52 @@
           <!-- Map indicator -->
           ${mapImageHtml}
 
-          <!-- Option Buttons -->
-          ${buttonsHtml}
-
         </div>
       `;
       messagesContainer.appendChild(div);
       chatViewport.scrollTo({ top: chatViewport.scrollHeight, behavior: 'smooth' });
     }
 
-    // Trigger Scan function (STANDALONE CLIENT-SIDE LOGIC)
-    async function triggerScan() {
-      // 1. Append scan notification
+    // Fetch recommendation from Python API Backend (with fallback)
+    async function fetchRecommendation(userInput) {
+      // Update weather indicators in Map Tab
+      const mapStatusWeather = document.getElementById('map-status-weather');
+      if (mapStatusWeather) {
+        mapStatusWeather.textContent = `Thời tiết: ${weatherCondition === 'stormy' ? 'Dông bão ⛈️' : 'Nắng ấm ☀️'}`;
+      }
+
+      const payload = {
+        current_station_id: currentStationId,
+        scan_time: currentTime,
+        weather: weatherCondition,
+        user_profile: sessionProfile,
+        user_message: userInput
+      };
+
+      try {
+        // Try calling the Python backend
+        const response = await fetch('http://localhost:8000/api/recommend', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        if (!response.ok) throw new Error('API response error');
+        
+        const data = await response.json();
+        return data;
+      } catch (err) {
+        console.warn("Lỗi kết nối Backend Python (chưa bật server hoặc lỗi CORS). Chuyển sang Offline Mock Mode:", err);
+        return runLocalMockRecommendation(userInput);
+      }
+    }
+
+    // Offline simulation backup logic
+    function runLocalMockRecommendation(userInput) {
+      if (userInput) {
+        return getBotResponse(userInput);
+      }
+      
       const stationsData = {
         qr_station_01: 'Trạm 1 - Cổng Cổ Tích',
         qr_station_02: 'Trạm 2 - Ngã Tư Phiêu Lưu',
@@ -398,20 +975,9 @@
         qr_station_04: 'Trạm 4 - Cổng Công Viên Nước'
       };
       const stationNameText = stationsData[currentStationId] || 'Trạm quét QR';
-      appendScanNotification(stationNameText);
       
-      // 2. Append loading
-      appendLoadingMessage();
-
-      // 3. Simulate delay
-      await new Promise(resolve => setTimeout(resolve, 800));
-      removeLoadingMessage();
-
       let responseData = null;
-
-      // 4. Decision Tree for Simulated Path
       if (weatherCondition === 'stormy') {
-        // Kịch bản 4: Thời tiết khẩn cấp dông bão (Emergency alert)
         responseData = {
           message: "⚠️ CẢNH BÁO THỜI TIẾT XẤU: Hiện tại trời đang có dông sét nguy hiểm ngoài trời! Để đảm bảo an toàn cho gia đình, WonderPath khuyên bạn di chuyển NGAY vào các khu vực trú ẩn trong nhà.\nĐiểm trú ẩn an toàn gần bạn nhất:\n1. 'Khu Vui Chơi Trong Nhà KidZone' (cách 250m, trong nhà mát mẻ, có ghế ngồi cho người lớn và chỗ chơi cho bé).\n2. 'Chòi Nghỉ Mát Ven Hồ' (ngay gần bạn cách 30m, có mái che tạm thời).",
           ui_buttons: [
@@ -428,7 +994,6 @@
           ]
         };
       } else if (!sessionProfile) {
-        // Kịch bản 2: Thiếu thông tin phân loại (Low confidence)
         responseData = {
           message: `Chào bạn! Bạn đang ở ${stationNameText}. Để WonderPath gợi ý lịch trình 1-2 tiếng tới phù hợp nhất cho bạn, vui lòng cho mình biết bạn đang đi cùng ai nhé?`,
           ui_buttons: [
@@ -450,7 +1015,6 @@
           ]
         };
       } else if (currentStationId === 'qr_station_02' && isCoasterMaint) {
-        // Kịch bản 3: Điểm gãy do bảo trì trò chơi (Failure path)
         responseData = {
           message: "Chào nhóm bạn trẻ năng động! Bạn đang ở Ngã Tư Phiêu Lưu. Tiếc quá, trò 'Tàu Lượn Siêu Tốc' ngay gần bạn đang tạm dừng bảo trì kỹ thuật định kỳ. \nĐừng lo, WonderPath gợi ý bạn thử sức với:\n1. 'Đu Quay Dây Văng' (cách 600m đi bộ, chờ xếp hàng chỉ 10 phút, cảm giác bay lượn cực thích).\n2. Ăn nhẹ nạp năng lượng tại 'Khu Ẩm Thực Nhanh Express' cách bạn 150m.\nBạn thấy sao?",
           ui_buttons: [
@@ -471,7 +1035,6 @@
           ]
         };
       } else {
-        // Kịch bản 1: Happy Path thông thường (Theo profile)
         if (sessionProfile.group_type === 'thrill_seekers') {
           responseData = {
             message: `Chào nhóm bạn trẻ! Thời tiết hiện tại nắng ấm (31°C) rất đẹp. WonderPath gợi ý lịch trình mạo hiểm trong 1-2 tiếng tới tại khu vực lân cận ${stationNameText} cho các bạn:\n1. Chơi 'Tàu Lượn Siêu Tốc' (cách 80m, chờ xếp hàng 45 phút, cảm giác mạnh cực đỉnh).\n2. Ăn nhẹ tại 'Khu Ẩm Thực Nhanh Express' (cách 150m, chờ 10 phút).\nCác bạn muốn bắt đầu từ đâu?`,
@@ -509,7 +1072,6 @@
             ]
           };
         } else {
-          // Default: Family with kids (Kịch bản Happy Path trong SPEC)
           responseData = {
             message: `Chào mừng gia đình bạn đến với ${stationNameText}! Thời tiết hiện tại nắng ấm (31°C) rất đẹp. WonderPath gợi ý lịch trình 1-2 tiếng tới cho gia đình mình như sau:\n1. Xem 'Show Rồng Lửa' bắt đầu lúc 10:15 ở Sân khấu trung tâm (cách 350m, đi bộ khoảng 5 phút).\n2. Chơi 'Lâu Đài Huyền Bí' (cách 50m, chờ xếp hàng 15 phút, trò chơi trong nhà mát mẻ phù hợp cho bé).\nBạn muốn làm gì tiếp theo?`,
             ui_buttons: [
@@ -531,6 +1093,30 @@
           };
         }
       }
+      return responseData;
+    }
+
+    // Trigger Scan function
+    async function triggerScan() {
+      // Update active marker on SVG map
+      updateActiveStationMarker();
+      
+      // 1. Append scan notification
+      const stationsData = {
+        qr_station_01: 'Trạm 1 - Cổng Cổ Tích',
+        qr_station_02: 'Trạm 2 - Ngã Tư Phiêu Lưu',
+        qr_station_03: 'Trạm 3 - Bến Thuyền Hồ Trung Tâm',
+        qr_station_04: 'Trạm 4 - Cổng Công Viên Nước'
+      };
+      const stationNameText = stationsData[currentStationId] || 'Trạm quét QR';
+      appendScanNotification(stationNameText);
+      
+      // 2. Append loading bubble
+      appendLoadingMessage();
+
+      // 3. API Call
+      const responseData = await fetchRecommendation(null);
+      removeLoadingMessage();
 
       // Render response
       appendBotMessageCard({
@@ -539,7 +1125,7 @@
       });
     }
 
-    // Keyword & Intent Matching Chatbot logic
+    // Keyword & Intent Matching Chatbot logic (For offline fallback mode)
     function getBotResponse(userText) {
       const text = userText.toLowerCase().trim();
       
@@ -755,12 +1341,29 @@
       // Append loading bubble
       appendLoadingMessage();
 
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // Get response (API call with offline fallback)
+      const responseData = await fetchRecommendation(userText);
       removeLoadingMessage();
 
-      // Get response & render
-      const responseData = getBotResponse(userText);
+      // Local mock state overrides (when user simulates parameters by typing them)
+      const text = userText.toLowerCase().trim();
+      if (text.includes("mưa") || text.includes("bão") || text.includes("dông") || text.includes("sét") || text.includes("storm") || text.includes("rain")) {
+        weatherCondition = "stormy";
+      } else if (text.includes("bảo trì") || text.includes("hỏng") || text.includes("sửa") || text.includes("tàu lượn") || text.includes("coaster") || text.includes("siêu tốc")) {
+        isCoasterMaint = true;
+        currentStationId = 'qr_station_02';
+      } else if (text.includes("bình thường") || text.includes("nắng") || text.includes("mở cửa lại") || text.includes("reset") || text.includes("hết mưa")) {
+        weatherCondition = "sunny";
+        isCoasterMaint = false;
+      } else if (text.includes("gia đình") || text.includes("trẻ nhỏ") || text.includes("có bé") || text.includes("trẻ em") || text.includes("family")) {
+        sessionProfile = { group_type: "family_with_kids" };
+      } else if (text.includes("cảm giác mạnh") || text.includes("mạo hiểm") || text.includes("thrill") || text.includes("nhóm trẻ") || text.includes("bạn trẻ")) {
+        sessionProfile = { group_type: "thrill_seekers" };
+      } else if (text.includes("thư giãn") || text.includes("thong thả") || text.includes("nghỉ dưỡng") || text.includes("nhẹ nhàng") || text.includes("leisure")) {
+        sessionProfile = { group_type: "leisure" };
+      }
+
+      // Render response
       appendBotMessageCard({
         ...responseData,
         weather_condition: weatherCondition
@@ -769,17 +1372,45 @@
 
     // QR modal trạm scan logic
     function showQrModal() {
+      switchTab('chat');
+      
+      // Reset Modal content view state
+      const scannerView = document.getElementById('qr-scanner-view');
+      const modalContent = document.getElementById('qr-modal-content');
+      
+      scannerView.classList.remove('hidden', 'opacity-0');
+      scannerView.classList.add('opacity-100');
+      modalContent.classList.add('hidden', 'translate-y-full');
+      
       qrModal.classList.remove('opacity-0', 'pointer-events-none');
-      qrModalContent.classList.remove('translate-y-full');
-      qrModalContent.classList.add('translate-y-0');
+      
+      // Simulate scanning for 1.5 seconds, then display the station list
+      setTimeout(() => {
+        scannerView.classList.add('opacity-0');
+        setTimeout(() => {
+          scannerView.classList.add('hidden');
+          modalContent.classList.remove('hidden');
+          // Trigger CSS slide-up transition
+          setTimeout(() => {
+            modalContent.classList.remove('translate-y-full');
+            modalContent.classList.add('translate-y-0');
+          }, 50);
+        }, 300);
+      }, 1500);
     }
 
     function hideQrModal() {
-      qrModalContent.classList.remove('translate-y-0');
-      qrModalContent.classList.add('translate-y-full');
+      const modalContent = document.getElementById('qr-modal-content');
+      modalContent.classList.remove('translate-y-0');
+      modalContent.classList.add('translate-y-full');
+      
       setTimeout(() => {
         qrModal.classList.add('opacity-0', 'pointer-events-none');
       }, 300);
+    }
+
+    function cancelScan() {
+      hideQrModal();
     }
 
     function scanStation(stationId, stationName) {
@@ -792,8 +1423,17 @@
     function handleButtonClick(label, action, targetId, data) {
       console.log(`Action clicked: ${label} (${action})`, targetId, data);
       
+      // Clear quick replies floating bar
+      const quickRepliesContainer = document.getElementById('quick-replies-container');
+      quickRepliesContainer.innerHTML = '';
+      quickRepliesContainer.classList.add('hidden');
+      
       if (action === 'navigate') {
         showToast(`🗺️ Đang vẽ lộ trình di chuyển tới ${label}...`, '🗺️');
+        drawRoute(currentStationId, targetId);
+        setTimeout(() => {
+          switchTab('map');
+        }, 1200);
       } else if (action === 'update_profile') {
         if (data && data.group_type) {
           sessionProfile = { group_type: data.group_type };
@@ -837,7 +1477,11 @@
       }
     });
 
-    btnAiAssist.addEventListener('click', showQrModal);
+    btnAiAssist.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showQrModal();
+    });
+    
     btnCloseQr.addEventListener('click', hideQrModal);
     qrModal.addEventListener('click', (e) => {
       if (e.target === qrModal) {
@@ -849,6 +1493,15 @@
       showToast('↩️ Đã hoàn tác thao tác vừa thực hiện.', '↩️');
       setTimeout(hideToast, 1500);
     });
+
+    // Navigation and tab-switching click listeners
+    navMap.addEventListener('click', () => switchTab('map'));
+    navChat.addEventListener('click', showQrModal);
+    navProfile.addEventListener('click', () => switchTab('profile'));
+
+    // Initial page load styling & markers
+    updateActiveStationMarker();
+    initMapPanEvents();
   </script>
 </body>
 </html>
