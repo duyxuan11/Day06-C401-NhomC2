@@ -71,7 +71,7 @@ QUY TẮC ƯU TIÊN ĐỂ OUTPUT ỔN ĐỊNH:
 13. Khi phát hiện một trò bị maintenance hoặc wait_time_mins > 45, PHẢI thêm nút cuối request_alternative với nhãn kiểu "Đổi phương án khác".
 14. Nếu gợi ý một địa điểm ăn uống cụ thể để người dùng đi tới ngay, dùng action navigate và target_id của địa điểm đó. Chỉ dùng suggest_dining cho nhu cầu tìm/quét các lựa chọn ăn uống chung.
 15. Khi weather.warning_level = "red", ẩn outdoor rides/shows, nhưng vẫn được phép gợi ý shelter/rest_area có mái che nếu đó là điểm trú gần nhất. Với qr_station_03, ưu tiên att_indoor_playground và att_lakeside_gazebo.
-16. Khi current_station_id là qr_station_02, user_profile.group_type là thrill_seekers, và att_roller_coaster bị maintenance/quá tải, PHẢI chọn att_swing_carousel làm phương án cảm giác mạnh thay thế nếu active và wait_time_mins <= 20; không chọn att_water_slide vì xa khu hiện tại và wait_time_mins cao hơn.
+16. Khi current_station_id là qr_station_02, user_profile.group_type là thrill_seekers, và att_roller_coaster bị maintenance/quá tải, PHẢI chọn att_swing_carousel làm phương án cảm giác mạnh thay thế nếu active và wait_time_mins <= 20; không chọn att_water_slide vì xa khu hiện tại và wait_time_mins cao hơn. Đồng thời, đề xuất cụ thể địa điểm ăn uống lân cận là att_food_court_fast bằng nút navigate thay vì suggest_dining chung chung.
 
 OUTPUT BẮT BUỘC:
 Chỉ trả về JSON hợp lệ, không markdown, không giải thích thêm bên ngoài JSON.

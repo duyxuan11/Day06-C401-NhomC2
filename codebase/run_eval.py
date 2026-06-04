@@ -82,57 +82,10 @@ GEMINI_RESPONSE_SCHEMA = {
     "required": ["message", "ui_buttons"]
 }
 
-# 3. System Prompt Template
-SYSTEM_PROMPT_TEMPLATE = """Bạn là WonderPath AI - Trợ lý dẫn đường ngữ cảnh thông minh tại công viên phức hợp giải trí lớn. 
-Nhiệm vụ của bạn là phân tích ngữ cảnh hiện tại của du khách và đề xuất lịch trình vi mô (1-2 tiếng tiếp theo) tối ưu, an toàn và cá nhân hóa nhất.
-
-Dữ liệu hệ thống cung cấp cho bạn gồm:
-1. Danh sách trò chơi tĩnh (attractions):
-{attractions}
-
-2. Bản đồ các trạm QR (stations):
-{stations}
-
-3. Trạng thái vận hành & hàng đợi thời gian thực (realtime_status):
-{realtime_status}
-
-4. Thời tiết hiện tại (weather):
-{weather}
-
-Ngữ cảnh hiện tại của du khách quét QR:
-- Mã trạm quét QR hiện tại: {current_station_id}
-- Thời gian quét: {current_time}
-- Thông tin nhóm du khách (user_profile): {user_profile} (nếu null tức là chưa có thông tin phân loại nhóm du khách).
-
-QUY TẮC XỬ LÝ LỊCH TRÌNH VÀ RỦI RO (FAILURE MODES):
-1. [QUY TẮC THỜI TIẾT]: Nếu weather.warning_level là "red" (dông bão cực đoan), lập tức ẨN mọi gợi ý ngoài trời (outdoor). Đưa ra cảnh báo đỏ và gợi ý 1-2 điểm trú ẩn hoặc vui chơi trong nhà (indoor) an toàn và gần trạm quét nhất.
-2. [QUY TẮC BẢO TRÌ/QUÁ TẢI]: Đối chiếu trạng thái các trò chơi lân cận trong `realtime_status`. Nếu trò chơi định gợi ý đang có trạng thái "maintenance" hoặc thời gian xếp hàng > 45 phút, KHÔNG gợi ý trò đó nữa. Hãy chủ động gợi ý trò chơi thay thế gần nhất có hàng đợi ngắn (< 20 phút) hoặc khu ẩm thực/nghỉ ngơi lân cận.
-3. [QUY TẮC PROFILE]:
-   - Nếu user_profile là null: Đưa ra câu chào ngắn gọn và hỏi lại thông tin nhóm du khách để phân loại thông qua các nút bấm. Không tự tiện gợi ý lịch trình chi tiết khi chưa biết đối tượng.
-   - Nếu user_profile có trẻ nhỏ/người già: Lọc bỏ toàn bộ trò chơi có thrill_level là "high" hoặc vi phạm giới hạn chiều cao (min_height_cm). Gợi ý các trò nhẹ nhàng (thrill_level: "low"), có tính chất gia đình, hoặc khu vui chơi trong nhà (KidZone).
-   - Nếu user_profile là nhóm bạn trẻ (thrill_seekers): Ưu tiên gợi ý các trò cảm giác mạnh (thrill_level: "high" hoặc "medium"), các show diễn hấp dẫn và đồ ăn nhanh.
-4. [QUY TẮC LỊCH TRÌNH VI MÔ]: Gợi ý tối đa 2 hoạt động/trò chơi tiếp theo trong vòng 1-2 tiếng tới, nêu rõ lý do lựa chọn ngắn gọn (ví dụ: khoảng cách gần bao nhiêu mét, thời gian chờ bao nhiêu phút, hoặc sắp đến giờ show diễn).
-
-QUY TẮC ƯU TIÊN ĐỂ OUTPUT ỔN ĐỊNH KHI KIỂM THỬ:
-5. Nếu có show có realtime_status.is_upcoming_soon = true, weather.warning_level không phải "red", show đang active, và show nằm trong danh sách gần trạm quét, PHẢI đưa show đó thành một nút `navigate`. Ví dụ lúc 10:00 phải ưu tiên `att_show_fire_dragon` lúc 10:15.
-6. Với gia đình có trẻ nhỏ tại `qr_station_01`, nếu `att_magic_castle` active và phù hợp chiều cao, PHẢI đưa `att_magic_castle` thành một nút `navigate`.
-7. Trong happy path, nếu có nhà hàng gần trạm, thêm một nút `suggest_dining` để người dùng tìm chỗ ăn gần đây. Nút `suggest_dining` có thể có hoặc không có `target_id`.
-8. Khi phát hiện một trò bị `maintenance` hoặc wait_time_mins > 45, PHẢI thêm nút cuối `request_alternative` với nhãn kiểu "Đổi phương án khác".
-9. Nếu gợi ý một địa điểm ăn uống cụ thể để người dùng đi tới ngay, dùng action `navigate` và target_id của địa điểm đó. Chỉ dùng `suggest_dining` cho nhu cầu tìm/quét các lựa chọn ăn uống chung.
-10. Khi weather.warning_level = "red", ẩn outdoor rides/shows, nhưng vẫn được phép gợi ý shelter/rest_area có mái che nếu đó là điểm trú gần nhất. Với `qr_station_03`, ưu tiên `att_indoor_playground` và `att_lakeside_gazebo`.
-11. Khi `current_station_id` là `qr_station_02`, user_profile.group_type là `thrill_seekers`, và `att_roller_coaster` bị maintenance/quá tải, PHẢI chọn `att_swing_carousel` làm phương án cảm giác mạnh thay thế nếu active và wait_time_mins <= 20; không chọn `att_water_slide` vì xa khu hiện tại và wait_time_mins cao hơn.
-
-YÊU CẦU ĐẦU RA (OUTPUT FORMAT):
-Bạn PHẢI trả về cấu trúc dữ liệu JSON chính xác theo Schema đã định nghĩa (WonderPathResponse), chứa hai trường: 'message' và 'ui_buttons'."""
-
-
-def parse_time_to_minutes(time_str: str) -> int:
-    """Parses 'HH:MM' string to minutes since start of day."""
-    try:
-        parts = time_str.split(":")
-        return int(parts[0]) * 60 + int(parts[1])
-    except (ValueError, IndexError, AttributeError):
-        return -1
+# 3. Import services from codebase
+sys.path.append(str(Path(__file__).resolve().parent))
+from server.services.context_builder import build_wonder_path_context
+from server.ai.prompt import build_wonder_path_prompt
 
 
 def run_evaluation(
@@ -172,56 +125,25 @@ def run_evaluation(
         scan_time = ctx["scan_time"]
         user_profile = ctx["user_profile"]
 
-        # Handle overrides
-        # 1. Weather
-        weather = base_weather["current"]
-        if ctx.get("weather_override"):
-            weather = ctx["weather_override"]
+        # Build input data structure with overrides
+        input_data = {
+            "qr_station_id": qr_station_id,
+            "scan_time": scan_time,
+            "user_profile": user_profile,
+            "weather_override": ctx.get("weather_override"),
+            "status_override": ctx.get("status_override")
+        }
 
-        # 2. Realtime status
-        realtime = base_realtime["attractions"]
-        if ctx.get("status_override"):
-            override_map = ctx["status_override"]
-            # Clone list to avoid modifying base
-            realtime = [dict(item) for item in realtime]
-            for item in realtime:
-                att_id = item["attraction_id"]
-                if att_id in override_map:
-                    item.update(override_map[att_id])
-        else:
-            realtime = [dict(item) for item in realtime]
+        # Build context using context_builder
+        context = build_wonder_path_context(input_data, mock_data={
+            "attractions": attractions,
+            "stations": stations,
+            "realtime_status": base_realtime,
+            "weather": base_weather
+        })
 
-        # Calculate time-aware showtime fields (starts_in_mins, is_upcoming_soon)
-        curr_mins = parse_time_to_minutes(scan_time)
-        for item in realtime:
-            starts_in_mins = None
-            is_upcoming_soon = False
-            showtimes = item.get("upcoming_showtimes") or []
-            if showtimes and curr_mins >= 0:
-                valid_diffs = []
-                for showtime in showtimes:
-                    show_mins = parse_time_to_minutes(showtime)
-                    if show_mins >= 0:
-                        diff = show_mins - curr_mins
-                        if diff >= 0:
-                            valid_diffs.append((diff, showtime))
-                if valid_diffs:
-                    valid_diffs.sort()
-                    starts_in_mins = valid_diffs[0][0]
-                    is_upcoming_soon = starts_in_mins <= 30
-            item["starts_in_mins"] = starts_in_mins
-            item["is_upcoming_soon"] = is_upcoming_soon
-
-        # Render Prompt
-        prompt = SYSTEM_PROMPT_TEMPLATE.format(
-            attractions=json.dumps(attractions, ensure_ascii=False, indent=2),
-            stations=json.dumps(stations, ensure_ascii=False, indent=2),
-            realtime_status=json.dumps(realtime, ensure_ascii=False, indent=2),
-            weather=json.dumps(weather, ensure_ascii=False, indent=2),
-            current_station_id=qr_station_id,
-            current_time=scan_time,
-            user_profile=json.dumps(user_profile, ensure_ascii=False, indent=2)
-        )
+        # Build prompt using the prompt builder
+        prompt = build_wonder_path_prompt(context)
 
         if dry_run:
             print(f"  [DRY RUN] Prompt được render thành công cho {sc_id} (Độ dài: {len(prompt)} ký tự).")
